@@ -1,4 +1,4 @@
-# 🤖 RefundPilot — The Instant Justice Machine
+# RefundPilot — Smarter Refunds for Modern Commerce
 
 > *"Meet Priya. Meet Rohit. One deserves her money back instantly. The other is gaming the system. Today, both wait 15 days. RefundPilot knows the difference in 4 seconds."*
 
