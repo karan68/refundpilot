@@ -234,9 +234,12 @@ The score is **pure math**  same input always gives the same output. The LLM onl
 
 **Yes — intentionally.** The current weights are based on:
 
-1. **Industry research** — Appriss Retail, which processes 370M+ returns/year for retailers like Home Depot, Best Buy, and Victoria's Secret, uses weighted behavioral scoring as their core methodology.
-2. **RFM analysis** — Recency-Frequency-Monetary is a foundational retail analytics technique (Bult & Wansbeek 1995, Fader et al. 2005).
-3. **Domain expertise** — S1 (customer refund rate) gets the highest weight because longitudinal behavior is the single most predictive signal for refund abuse.
+1. **Industry research** — [Appriss Retail (The Retail Equation)](https://apprissretail.com/), which processes 370M+ returns/year for retailers like Home Depot, Best Buy, and Victoria's Secret, uses [weighted behavioral scoring](https://apprissretail.com/solution/verify/) as their core methodology. [Signifyd](https://www.signifyd.com/) and [Riskified](https://www.riskified.com/) use similar network-based fraud scoring for e-commerce.
+2. **RFM analysis** — Recency-Frequency-Monetary is a foundational retail analytics technique. Key references:
+   - Bult, J.R. & Wansbeek, T. (1995). [Optimal selection for direct mail](https://doi.org/10.1287/mksc.14.4.378). *Marketing Science*, 14(4), 378-394.
+   - Fader, P.S., Hardie, B.G.S. & Lee, K.L. (2005). ["Counting Your Customers" the Easy Way](https://doi.org/10.1287/mksc.1040.0098). *Marketing Science*, 24(2), 275-284.
+   - [RFM Segmentation in Retail Analytics](https://en.wikipedia.org/wiki/RFM_(market_research)) — Wikipedia overview.
+3. **Domain expertise** — S1 (customer refund rate) gets the highest weight because [longitudinal behavior is the single most predictive signal](https://www.retaildive.com/news/return-fraud-costs-retailers-101-billion/639752/) for refund abuse. The NRF estimates return fraud costs US retailers [$101 billion annually](https://nrf.com/research/2023-consumer-returns-retail-industry).
 
 **But we acknowledge these are starting weights.** In production, they evolve:
 
