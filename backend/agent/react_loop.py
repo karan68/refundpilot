@@ -34,31 +34,33 @@ MAX_REACT_ITERATIONS = 5
 async def run_react_loop(signals_data: dict, decision_result: dict, message: str, reason: str) -> dict:
     """Run a ReAct reasoning loop for investigate-zone cases.
 
-    Attempts to call Bedrock for LLM reasoning. Falls back to heuristic
-    tool selection if Bedrock is unavailable.
-
-    Returns:
-        dict with steps[], final_action, and reasoning
+    Uses GLM for LLM reasoning when LLM_ENABLED=true.
+    Falls back to heuristic tool selection otherwise.
     """
+    from config import LLM_ENABLED
+
     signals = signals_data["signals"]
     risk_score = decision_result["risk_score"]
 
     steps = []
+
+    if not LLM_ENABLED:
+        return await _heuristic_react_loop(signals, risk_score, signals_data, steps)
 
     # Try LLM-based ReAct
     try:
         result = await _llm_react_loop(signals_data, decision_result, message, reason, steps)
         return result
     except Exception:
-        # Bedrock unavailable — use heuristic ReAct simulation
+        # GLM unavailable — use heuristic ReAct simulation
         return await _heuristic_react_loop(signals, risk_score, signals_data, steps)
 
 
 async def _llm_react_loop(
     signals_data: dict, decision_result: dict, message: str, reason: str, steps: list
 ) -> dict:
-    """LLM-powered ReAct loop using AWS Bedrock."""
-    from services.bedrock_service import invoke_llm
+    """LLM-powered ReAct loop using ZhipuAI GLM."""
+    from services.zhipu_service import invoke_llm
 
     signals = signals_data["signals"]
     risk_score = decision_result["risk_score"]

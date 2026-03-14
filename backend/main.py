@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -7,6 +10,7 @@ from config import CORS_ORIGINS
 from models.database import init_db
 from data.seed_data import seed_database
 from routers import refund_router, dashboard_router, query_router, webhook_router
+from routers import demo_router
 
 
 @asynccontextmanager
@@ -41,6 +45,7 @@ app.include_router(refund_router.router)
 app.include_router(dashboard_router.router)
 app.include_router(query_router.router)
 app.include_router(webhook_router.router)
+app.include_router(demo_router.router)
 
 
 # WebSocket for real-time streaming (reasoning chain, risk score updates)

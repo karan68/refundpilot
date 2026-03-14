@@ -116,30 +116,54 @@ async def analyze_evidence_photo(
 async def _analyze_with_vision(
     image_bytes: bytes, product_description: str, damage_reason: str, media_type: str
 ) -> dict:
-    """Call Bedrock Vision for damage analysis. Falls back to simulated result if unavailable."""
+    """Call Groq (Llama 4 Scout) for vision analysis. Falls back to simulated if unavailable."""
     try:
-        from services.bedrock_service import invoke_vision
+        import httpx
+        import base64
+        from config import GROQ_API_KEY, GROQ_BASE_URL, GROQ_VISION_MODEL
+
+        image_b64 = base64.b64encode(image_bytes).decode("utf-8")
 
         prompt = f"""Analyze this product image submitted as refund evidence.
 Product ordered: {product_description}
 Claimed issue: {damage_reason}
 
-Evaluate and respond in JSON:
-1. "is_damaged": Is the product visibly damaged? (true/false)
-2. "matches_order": Does the product match the order description? (true/false)
-3. "is_stock_photo": Does this appear to be a stock/internet image rather than genuine photo? (true/false)
-4. "severity": Damage severity: "none" / "minor" / "moderate" / "severe"
-5. "confidence": Your confidence in this assessment (0.0 to 1.0)
-6. "explanation": Brief explanation of findings
+Respond with JSON ONLY:
+{{"is_damaged": true/false, "matches_order": true/false, "is_stock_photo": true/false, "severity": "none"/"minor"/"moderate"/"severe", "confidence": 0.0-1.0, "explanation": "brief"}}"""
 
-Return ONLY valid JSON, no other text."""
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.post(
+                f"{GROQ_BASE_URL}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {GROQ_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": GROQ_VISION_MODEL,
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "image_url", "image_url": {"url": f"data:{media_type};base64,{image_b64}"}},
+                                {"type": "text", "text": prompt},
+                            ],
+                        }
+                    ],
+                    "max_tokens": 200,
+                    "temperature": 0.3,
+                },
+            )
+            response.raise_for_status()
+            result = response.json()
+            response_text = result["choices"][0]["message"]["content"]
 
-        response_text = await invoke_vision(prompt, image_bytes, media_type)
-
-        # Try to parse JSON from response
+        # Parse JSON
         try:
-            result = json.loads(response_text)
-            return result
+            if "```json" in response_text:
+                response_text = response_text.split("```json")[1].split("```")[0]
+            elif "```" in response_text:
+                response_text = response_text.split("```")[1].split("```")[0]
+            return json.loads(response_text.strip())
         except json.JSONDecodeError:
             return {
                 "is_damaged": True,
@@ -147,19 +171,19 @@ Return ONLY valid JSON, no other text."""
                 "is_stock_photo": False,
                 "severity": "unknown",
                 "confidence": 0.5,
-                "explanation": "Vision analysis returned non-JSON response",
+                "explanation": "Vision returned non-JSON response",
                 "raw_response": response_text[:200],
             }
 
     except Exception as e:
-        # Bedrock not available — return simulated analysis
+        # GLM not available — return simulated analysis
         return {
             "is_damaged": True,
             "matches_order": True,
             "is_stock_photo": False,
             "severity": "moderate",
             "confidence": 0.7,
-            "explanation": f"Simulated vision analysis (Bedrock unavailable: {type(e).__name__}). Assuming genuine damage for demo.",
+            "explanation": f"Simulated vision analysis (GLM unavailable: {type(e).__name__}). Assuming genuine damage for demo.",
             "simulated": True,
         }
 

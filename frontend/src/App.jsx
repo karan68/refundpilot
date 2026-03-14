@@ -2,11 +2,13 @@ import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import CustomerPage from './pages/CustomerPage';
 import DashboardPage from './pages/DashboardPage';
 import DemoPage from './pages/DemoPage';
+import ChatPage from './pages/ChatPage';
 import RefundDetailPage from './pages/RefundDetailPage';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Submit Refund', icon: '📝' },
   { path: '/dashboard', label: 'Dashboard', icon: '📊' },
+  { path: '/chat', label: 'Chat Refund', icon: '💬' },
   { path: '/demo', label: 'Live Demo', icon: '⚡' },
 ];
 
@@ -64,6 +66,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<CustomerPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/chat" element={<ChatPage />} />
             <Route path="/demo" element={<DemoPage />} />
             <Route path="/refund/:id" element={<RefundDetailPage />} />
           </Routes>

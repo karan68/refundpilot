@@ -71,6 +71,7 @@ async def init_db():
             pine_labs_ref TEXT,
             processing_time_ms INTEGER,
             status TEXT DEFAULT 'pending',
+            settlement_status TEXT DEFAULT 'pending',
             created_at TEXT DEFAULT (datetime('now')),
             FOREIGN KEY (order_id) REFERENCES orders(id),
             FOREIGN KEY (customer_id) REFERENCES customers(id)

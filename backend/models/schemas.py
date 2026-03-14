@@ -155,4 +155,4 @@ class MerchantQueryRequest(BaseModel):
 
 class MerchantQueryResponse(BaseModel):
     answer: str
-    data: Optional[dict] = None
+    data: Optional[list | dict] = None

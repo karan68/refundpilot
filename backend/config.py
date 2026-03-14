@@ -1,6 +1,21 @@
 import os
 
-# AWS Bedrock Configuration
+# ZhipuAI (GLM-5) Configuration
+ZHIPU_API_KEY = os.getenv("ZHIPU_API_KEY", "")
+ZHIPU_BASE_URL = "https://api.z.ai/api/paas/v4"
+ZHIPU_MODEL = os.getenv("ZHIPU_MODEL", "glm-5")
+ZHIPU_CHAT_MODEL = os.getenv("ZHIPU_CHAT_MODEL", "glm-5")
+
+# LLM Usage Control — minimize token burn
+# Set to False to skip LLM explanation calls (use template fallback)
+LLM_ENABLED = os.getenv("LLM_ENABLED", "true").lower() == "true"
+
+# Groq Configuration (free tier — used for VISION only)
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+GROQ_VISION_MODEL = os.getenv("GROQ_VISION_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct")
+
+# AWS Bedrock Configuration (legacy — kept for fallback)
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "anthropic.claude-3-sonnet-20240229-v1:0")
 BEDROCK_VISION_MODEL_ID = os.getenv("BEDROCK_VISION_MODEL_ID", "anthropic.claude-3-sonnet-20240229-v1:0")

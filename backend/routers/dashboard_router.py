@@ -1,5 +1,8 @@
 from fastapi import APIRouter
 from models.database import get_db
+from services.alert_service import check_fraud_spikes
+from services.cohort_analyzer import get_product_cohorts, get_city_cohorts, get_reason_cohorts
+from services.fraud_similarity_service import get_fraud_similarity, compute_fraudster_centroid
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
@@ -106,4 +109,154 @@ async def get_customer_detail(customer_id: str):
         "customer": dict(customer),
         "refunds": refunds,
         "orders": orders,
+    }
+
+
+@router.get("/alerts")
+async def get_alerts():
+    """Get fraud spike alerts."""
+    alerts = await check_fraud_spikes()
+    return {"alerts": alerts, "count": len(alerts)}
+
+
+@router.get("/cohorts/products")
+async def get_product_cohort_data():
+    """Get refund cohorts by product."""
+    return await get_product_cohorts()
+
+
+@router.get("/cohorts/cities")
+async def get_city_cohort_data():
+    """Get refund cohorts by city."""
+    return await get_city_cohorts()
+
+
+@router.get("/cohorts/reasons")
+async def get_reason_cohort_data():
+    """Get refund cohorts by reason."""
+    return await get_reason_cohorts()
+
+
+@router.get("/audit-log")
+async def get_audit_log(limit: int = 50):
+    """Get audit trail entries."""
+    db = await get_db()
+    cursor = await db.execute(
+        "SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT ?", (limit,)
+    )
+    logs = [dict(row) for row in await cursor.fetchall()]
+    await db.close()
+    return logs
+
+
+@router.get("/reconciliation")
+async def get_reconciliation():
+    """F24: Get refund settlement status for reconciliation view."""
+    db = await get_db()
+    cursor = await db.execute(
+        """SELECT r.id, r.order_id, r.customer_id, r.amount, r.decision,
+                  r.pine_labs_ref, r.settlement_status, r.status, r.created_at,
+                  c.name as customer_name
+           FROM refunds r JOIN customers c ON r.customer_id = c.id
+           WHERE r.decision = 'AUTO_APPROVE'
+           ORDER BY r.created_at DESC"""
+    )
+    refunds = [dict(row) for row in await cursor.fetchall()]
+    await db.close()
+
+    settled = sum(1 for r in refunds if r["settlement_status"] == "settled")
+    pending = sum(1 for r in refunds if r["settlement_status"] == "pending")
+    failed = sum(1 for r in refunds if r["settlement_status"] == "failed")
+
+    return {
+        "refunds": refunds,
+        "summary": {"settled": settled, "pending": pending, "failed": failed, "total": len(refunds)},
+    }
+
+
+@router.get("/fraud-graph")
+async def get_fraud_graph():
+    """F27: Graph analytics — Customer ↔ Address network for fraud ring visualization."""
+    db = await get_db()
+
+    # Build nodes: customers + addresses
+    cursor = await db.execute("SELECT id, name, customer_type, refund_rate FROM customers")
+    customers = [dict(row) for row in await cursor.fetchall()]
+
+    cursor = await db.execute(
+        "SELECT DISTINCT shipping_address FROM orders WHERE shipping_address != ''"
+    )
+    addresses = [dict(row)["shipping_address"] for row in await cursor.fetchall()]
+
+    # Build edges: customer → address (from orders)
+    cursor = await db.execute(
+        """SELECT DISTINCT customer_id, shipping_address FROM orders
+           WHERE shipping_address != ''"""
+    )
+    edges_raw = [dict(row) for row in await cursor.fetchall()]
+
+    await db.close()
+
+    # Format for frontend graph visualization
+    nodes = []
+    for c in customers:
+        nodes.append({
+            "id": c["id"],
+            "label": c["name"],
+            "type": "customer",
+            "group": c["customer_type"],
+            "refund_rate": c["refund_rate"],
+        })
+    for addr in addresses:
+        nodes.append({
+            "id": f"addr_{hash(addr) % 10000}",
+            "label": addr[:25] + ("..." if len(addr) > 25 else ""),
+            "full_address": addr,
+            "type": "address",
+            "group": "address",
+        })
+
+    edges = []
+    for e in edges_raw:
+        edges.append({
+            "source": e["customer_id"],
+            "target": f"addr_{hash(e['shipping_address']) % 10000}",
+        })
+
+    # Detect rings (addresses with 2+ customers)
+    addr_counts = {}
+    for e in edges_raw:
+        addr_counts.setdefault(e["shipping_address"], set()).add(e["customer_id"])
+    rings = [
+        {"address": addr, "customers": list(custs)}
+        for addr, custs in addr_counts.items()
+        if len(custs) >= 2
+    ]
+
+    return {"nodes": nodes, "edges": edges, "rings": rings}
+
+
+@router.get("/fraud-similarity/{customer_id}")
+async def get_customer_fraud_similarity(customer_id: str):
+    """F26: Compute fraud similarity score for a customer."""
+    from agent.signal_collector import collect_signals
+
+    db = await get_db()
+    # Get customer's most recent order for signal computation
+    cursor = await db.execute(
+        "SELECT id FROM orders WHERE customer_id = ? ORDER BY order_date DESC LIMIT 1",
+        (customer_id,),
+    )
+    order = await cursor.fetchone()
+    await db.close()
+
+    if not order:
+        return {"error": "No orders found for customer"}
+
+    signals_data = await collect_signals(customer_id, order["id"], "damaged_in_transit", "")
+    similarity = await get_fraud_similarity(signals_data["signals"])
+
+    return {
+        "customer_id": customer_id,
+        "fraud_similarity": similarity,
     }

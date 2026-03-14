@@ -8,7 +8,7 @@ Tier 3 (score 71-100): Math decides → ESCALATE. Agent builds case brief.
 from agent.risk_scorer import compute_risk_score
 from agent.counterfactual import compute_counterfactuals
 from agent.react_loop import run_react_loop
-from config import RETURNLESS_REFUND_THRESHOLD
+from config import RETURNLESS_REFUND_THRESHOLD, LLM_ENABLED
 import json
 
 
@@ -77,7 +77,7 @@ async def evaluate_refund(signals_data: dict, message: str, reason: str, preset:
         # Tier 1: Math decides. Determine returnless vs return-required.
         is_returnless = amount < RETURNLESS_REFUND_THRESHOLD
         recommended_action = "refund_returnless" if is_returnless else "refund_with_return"
-        explanation = _generate_fallback_explanation(risk_score, decision, reasoning_chain, is_returnless)
+        explanation = await _generate_llm_explanation(risk_score, decision, reasoning_chain, is_returnless)
         react_steps = []
 
     elif decision == "INVESTIGATE":
@@ -90,14 +90,14 @@ async def evaluate_refund(signals_data: dict, message: str, reason: str, preset:
         elif recommended_action == "escalate":
             recommended_action = "escalate_to_human"
 
-        explanation = _generate_fallback_explanation(risk_score, decision, reasoning_chain)
+        explanation = await _generate_llm_explanation(risk_score, decision, reasoning_chain)
         if cold_start_note:
             explanation = cold_start_note + " " + explanation
         react_steps = react_result.get("steps", [])
 
     else:  # ESCALATE
         recommended_action = "escalate_to_human"
-        explanation = _generate_fallback_explanation(risk_score, decision, reasoning_chain)
+        explanation = await _generate_llm_explanation(risk_score, decision, reasoning_chain)
         react_steps = []
 
     # Step 5: Counterfactual explanations
@@ -147,8 +147,42 @@ def _pick_investigate_action(signals: dict, is_cold_start: bool) -> str:
     return "offer_store_credit"
 
 
+async def _generate_llm_explanation(risk_score: int, decision: str, reasoning_chain: list, is_returnless: bool = False) -> str:
+    """Generate explanation using ZhipuAI GLM, with template fallback on failure."""
+    if not LLM_ENABLED:
+        return _generate_fallback_explanation(risk_score, decision, reasoning_chain, is_returnless)
+
+    try:
+        from services.zhipu_service import invoke_llm
+
+        # Build signal summary for the LLM
+        signal_lines = []
+        for s in reasoning_chain:
+            if s.get("signal") == "circuit_breaker":
+                signal_lines.append(f"  CIRCUIT BREAKER: {s['detail']}")
+                continue
+            signal_lines.append(f"  S{s['step']} {s['signal']}: {s['detail']} (score: {s['score']}/100, weighted: {s['weighted']:+.1f})")
+
+        prompt = f"""You are RefundPilot, an autonomous refund decision agent. 
+A refund was scored {risk_score}/100 → decision: {decision}.
+
+Signal breakdown:
+{chr(10).join(signal_lines)}
+
+Explain this decision in 2-3 concise sentences for a merchant. 
+Highlight the top 2-3 signals that drove the decision.
+Be direct and factual. No markdown formatting."""
+
+        explanation = await invoke_llm(prompt, system="You are a fraud detection analyst. Be concise and factual.")
+        return explanation.strip()
+
+    except Exception:
+        # Fallback to template
+        return _generate_fallback_explanation(risk_score, decision, reasoning_chain, is_returnless)
+
+
 def _generate_fallback_explanation(risk_score: int, decision: str, reasoning_chain: list, is_returnless: bool = False) -> str:
-    """Generate a template-based explanation without LLM (fallback if Bedrock unavailable)."""
+    """Generate a template-based explanation without LLM (fallback)."""
     # Find top 3 signals by weighted impact
     sorted_signals = sorted(reasoning_chain, key=lambda s: abs(s.get("weighted", 0)), reverse=True)
     top_3 = sorted_signals[:3]
