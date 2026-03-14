@@ -20,54 +20,64 @@ export default function ReconciliationTab() {
     pending: 'text-yellow-400',
     failed: 'text-red-400',
   };
-  const statusIcons = {
-    settled: '✅',
-    pending: '🕐',
-    failed: '🚩',
-  };
+  const settlementRate = data.summary.total > 0 ? Math.round((data.summary.settled / data.summary.total) * 100) : 0;
 
   return (
-    <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
-      <h2 className="text-lg font-semibold text-white mb-4">🏦 Settlement Reconciliation (F24)</h2>
+    <div className="glass-panel p-7 xl:p-8">
+      <h2 className="section-title">Settlement health</h2>
+      <p className="section-copy mt-2">Auto-approved refunds and how far each one has progressed through Pine Labs settlement.</p>
 
-      {/* Summary */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/20 text-center">
-          <p className="text-2xl font-bold text-green-400">{data.summary.settled}</p>
-          <p className="text-xs text-gray-500">Settled</p>
+      <div className="mt-6 rounded-3xl border border-slate-800 bg-slate-950/45 p-5">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Completion</p>
+            <p className="mt-2 text-4xl font-semibold text-white">{settlementRate}%</p>
+          </div>
+          <p className="max-w-sm text-sm leading-relaxed text-slate-400">
+            {data.summary.settled} settled, {data.summary.pending} pending, and {data.summary.failed} failed settlements across approved refunds.
+          </p>
         </div>
-        <div className="p-3 rounded-lg bg-yellow-500/5 border border-yellow-500/20 text-center">
-          <p className="text-2xl font-bold text-yellow-400">{data.summary.pending}</p>
-          <p className="text-xs text-gray-500">Pending</p>
-        </div>
-        <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/20 text-center">
-          <p className="text-2xl font-bold text-red-400">{data.summary.failed}</p>
-          <p className="text-xs text-gray-500">Failed</p>
+        <div className="mt-4 h-2 rounded-full bg-slate-800">
+          <div className="h-2 rounded-full bg-emerald-400" style={{ width: `${settlementRate}%` }} />
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-gray-500 text-xs border-b border-gray-800">
-              <th className="text-left p-2">Refund</th>
-              <th className="text-left p-2">Customer</th>
-              <th className="text-left p-2">Amount</th>
-              <th className="text-left p-2">Pine Labs Ref</th>
-              <th className="text-left p-2">Settlement</th>
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-3xl border border-green-500/20 bg-green-500/5 p-4 text-center">
+          <p className="text-3xl font-semibold text-green-300">{data.summary.settled}</p>
+          <p className="mt-1 text-sm text-slate-400">Settled</p>
+        </div>
+        <div className="rounded-3xl border border-yellow-500/20 bg-yellow-500/5 p-4 text-center">
+          <p className="text-3xl font-semibold text-yellow-300">{data.summary.pending}</p>
+          <p className="mt-1 text-sm text-slate-400">Pending</p>
+        </div>
+        <div className="rounded-3xl border border-red-500/20 bg-red-500/5 p-4 text-center">
+          <p className="text-3xl font-semibold text-red-300">{data.summary.failed}</p>
+          <p className="mt-1 text-sm text-slate-400">Failed</p>
+        </div>
+      </div>
+
+      <div className="mt-6 overflow-x-auto rounded-3xl border border-slate-800 bg-slate-950/45">
+        <table className="w-full min-w-[720px] text-left text-sm">
+          <thead className="border-b border-slate-800 text-xs uppercase tracking-[0.16em] text-slate-500">
+            <tr>
+              <th className="px-4 py-4 font-medium">Refund</th>
+              <th className="px-4 py-4 font-medium">Customer</th>
+              <th className="px-4 py-4 font-medium">Amount</th>
+              <th className="px-4 py-4 font-medium">Pine Labs Ref</th>
+              <th className="px-4 py-4 font-medium">Settlement</th>
             </tr>
           </thead>
           <tbody>
-            {data.refunds?.slice(0, 15).map(r => (
-              <tr key={r.id} className="border-b border-gray-800/50 hover:bg-gray-800/20">
-                <td className="p-2 font-mono text-gray-400 text-xs">{r.id}</td>
-                <td className="p-2 text-white text-xs">{r.customer_name}</td>
-                <td className="p-2 text-white text-xs">₹{r.amount}</td>
-                <td className="p-2 font-mono text-gray-500 text-xs">{r.pine_labs_ref || '—'}</td>
-                <td className="p-2">
-                  <span className={`text-xs ${statusColors[r.settlement_status] || 'text-gray-500'}`}>
-                    {statusIcons[r.settlement_status] || '❓'} {r.settlement_status}
+            {data.refunds?.slice(0, 12).map(r => (
+              <tr key={r.id} className="border-t border-slate-800/70 hover:bg-slate-900/55">
+                <td className="px-4 py-4 font-mono text-slate-400">{r.id}</td>
+                <td className="px-4 py-4 text-white">{r.customer_name}</td>
+                <td className="px-4 py-4 text-white">₹{r.amount}</td>
+                <td className="px-4 py-4 font-mono text-slate-500">{r.pine_labs_ref || '—'}</td>
+                <td className="px-4 py-4">
+                  <span className={`text-sm capitalize ${statusColors[r.settlement_status] || 'text-slate-500'}`}>
+                    {r.settlement_status}
                   </span>
                 </td>
               </tr>

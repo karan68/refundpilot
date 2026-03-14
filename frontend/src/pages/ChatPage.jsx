@@ -2,10 +2,10 @@ import ChatRefundPanel from '../components/ChatRefundPanel';
 
 export default function ChatPage() {
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Conversational Refund</h1>
-        <p className="text-gray-400 mt-1">Submit refund requests in natural language — English or Hindi</p>
+    <div className="page-shell max-w-[1380px]">
+      <div className="page-header">
+        <h1 className="page-title">Conversational Refund</h1>
+        <p className="page-subtitle">Submit refund requests in natural language and see the agent respond with a full refund workflow.</p>
       </div>
       <ChatRefundPanel />
     </div>

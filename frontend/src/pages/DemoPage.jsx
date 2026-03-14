@@ -10,11 +10,13 @@ const SCENARIOS = [
   {
     key: 'priya',
     name: 'Priya Sharma',
-    type: 'loyal',
-    icon: '🟢',
-    color: 'green',
-    border: 'border-green-500/30',
-    desc: 'Loyal Customer — 23 orders, 2% refund rate',
+    segment: 'Loyal customer',
+    border: 'border-emerald-400/35',
+    tint: 'from-emerald-500/12 via-transparent to-transparent',
+    tag: 'border-emerald-400/20 bg-emerald-500/10 text-emerald-200',
+    text: 'text-emerald-300',
+    button: 'bg-emerald-600 hover:bg-emerald-500',
+    desc: '23 orders, 2% refund rate, strong delivery history',
     request: '"My Cotton Kurta arrived with a tear on the sleeve"',
     order: 'ORD-1001 · ₹800 · Fashion',
     expected: 'AUTO_APPROVE',
@@ -22,11 +24,13 @@ const SCENARIOS = [
   {
     key: 'vikram',
     name: 'Vikram Singh',
-    type: 'suspect',
-    icon: '🟡',
-    color: 'yellow',
-    border: 'border-yellow-500/30',
-    desc: 'Suspect — 8 orders, 50% refund rate, 1 cross-merchant claim',
+    segment: 'Watchlist',
+    border: 'border-amber-400/35',
+    tint: 'from-amber-500/12 via-transparent to-transparent',
+    tag: 'border-amber-400/20 bg-amber-500/10 text-amber-200',
+    text: 'text-amber-300',
+    button: 'bg-amber-600 hover:bg-amber-500',
+    desc: '8 orders, 50% refund rate, one network claim elsewhere',
     request: '"These shoes don\'t match the description at all"',
     order: 'ORD-4001 · ₹2,400 · Fashion',
     expected: 'INVESTIGATE',
@@ -34,11 +38,13 @@ const SCENARIOS = [
   {
     key: 'rohit',
     name: 'Rohit Mehta',
-    type: 'abuser',
-    icon: '🔴',
-    color: 'red',
-    border: 'border-red-500/30',
-    desc: 'Serial Abuser — 12 orders, 67% refund rate, 2 cross-merchant claims',
+    segment: 'Abuse risk',
+    border: 'border-rose-400/35',
+    tint: 'from-rose-500/12 via-transparent to-transparent',
+    tag: 'border-rose-400/20 bg-rose-500/10 text-rose-200',
+    text: 'text-rose-300',
+    button: 'bg-rose-600 hover:bg-rose-500',
+    desc: '12 orders, 67% refund rate, repeated cross-merchant behaviour',
     request: '"Shoes were damaged in transit, completely unusable"',
     order: 'ORD-2001 · ₹2,400 · Fashion',
     expected: 'ESCALATE',
@@ -47,45 +53,42 @@ const SCENARIOS = [
 
 function DemoCard({ scenario, result, loading, onRun }) {
   const decisionColors = {
-    AUTO_APPROVE: 'border-green-500',
-    INVESTIGATE: 'border-yellow-500',
-    ESCALATE: 'border-red-500',
+    AUTO_APPROVE: 'border-emerald-400/60',
+    INVESTIGATE: 'border-amber-400/60',
+    ESCALATE: 'border-rose-400/60',
   };
 
   return (
-    <div className={`bg-gray-900 rounded-2xl p-5 border-2 ${result ? decisionColors[result.decision] || scenario.border : scenario.border} transition-all`}>
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-3">
-        <span className="text-2xl">{scenario.icon}</span>
-        <div>
-          <h2 className="text-lg font-bold text-white">{scenario.name}</h2>
-          <p className={`text-${scenario.color}-400 text-xs`}>{scenario.desc}</p>
+    <div className={`glass-panel relative overflow-hidden border-2 p-6 xl:p-7 ${result ? decisionColors[result.decision] || scenario.border : scenario.border}`}>
+      <div className={`pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b ${scenario.tint}`} />
+
+      <div className="relative">
+        <div className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] ${scenario.tag}`}>
+          {scenario.segment}
         </div>
+        <h2 className="mt-5 text-2xl font-semibold text-white xl:text-[1.85rem]">{scenario.name}</h2>
+        <p className={`mt-2 text-sm xl:text-base ${scenario.text}`}>{scenario.desc}</p>
       </div>
 
-      {/* Request */}
-      <div className="bg-gray-800/50 rounded-lg p-3 mb-3">
-        <p className="text-xs text-gray-500">Refund Request:</p>
-        <p className="text-white text-sm mt-1">{scenario.request}</p>
-        <p className="text-gray-600 text-xs mt-1">{scenario.order}</p>
+      <div className="relative mt-5 rounded-3xl border border-gray-800 bg-gray-800/55 p-4 xl:p-5">
+        <p className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500">Refund request</p>
+        <p className="mt-2 text-base text-white xl:text-lg">{scenario.request}</p>
+        <p className="mt-2 text-sm text-gray-500">{scenario.order}</p>
       </div>
 
-      {/* Run Button */}
       {!result && (
         <button
           onClick={onRun}
           disabled={loading}
-          className={`w-full py-3 rounded-lg bg-${scenario.color}-600 hover:bg-${scenario.color}-700 text-white font-semibold text-sm transition-colors disabled:opacity-50`}
+          className={`mt-5 w-full rounded-2xl px-5 py-4 text-base font-semibold text-white transition-colors disabled:opacity-50 ${scenario.button}`}
         >
-          {loading ? '🤖 Agent Processing...' : `Run ${scenario.name.split(' ')[0]}'s Refund`}
+          {loading ? 'Agent processing...' : `Run ${scenario.name.split(' ')[0]}'s refund`}
         </button>
       )}
 
-      {/* Result */}
       {result && (
-        <div className="space-y-3 mt-2">
-          {/* Decision + Score */}
-          <div className="flex items-center gap-4">
+        <div className="mt-5 space-y-4">
+          <div className="flex items-center gap-5">
             <RiskScoreMeter score={result.risk_score || 0} />
             <div className="flex-1">
               <DecisionCard
@@ -97,66 +100,58 @@ function DemoCard({ scenario, result, loading, onRun }) {
             </div>
           </div>
 
-          {/* Badges */}
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {result.is_cold_start && (
-              <span className="px-2 py-0.5 rounded text-xs bg-blue-500/10 text-blue-400">🆕 Cold Start</span>
+              <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs text-blue-300">Cold start</span>
             )}
             {result.circuit_breaker_fired && (
-              <span className="px-2 py-0.5 rounded text-xs bg-red-500/10 text-red-400">🚨 Circuit Breaker</span>
+              <span className="rounded-full bg-red-500/10 px-3 py-1 text-xs text-red-300">Circuit breaker</span>
             )}
             {result.fraud_ring?.ring_detected && (
-              <span className="px-2 py-0.5 rounded text-xs bg-red-500/10 text-red-400">🕸️ Fraud Ring ({result.fraud_ring.total_linked} linked)</span>
+              <span className="rounded-full bg-red-500/10 px-3 py-1 text-xs text-red-300">Fraud ring ({result.fraud_ring.total_linked} linked)</span>
             )}
-            <span className="px-2 py-0.5 rounded text-xs bg-gray-700 text-gray-300">⚡ {result.recommended_action?.replace(/_/g, ' ')}</span>
+            <span className="rounded-full bg-gray-700 px-3 py-1 text-xs text-gray-300">{result.recommended_action?.replace(/_/g, ' ')}</span>
           </div>
 
-          {/* Explanation */}
-          <div className="p-3 rounded-lg bg-gray-800/50 border border-gray-700">
-            <p className="text-xs text-gray-500 mb-1">Agent Explanation:</p>
-            <p className="text-sm text-gray-300">{result.explanation}</p>
+          <div className="rounded-3xl border border-gray-700 bg-gray-800/50 p-4 xl:p-5">
+            <p className="mb-2 text-xs font-medium uppercase tracking-[0.18em] text-gray-500">Agent explanation</p>
+            <p className="text-base text-gray-300">{result.explanation}</p>
           </div>
 
-          {/* ReAct Steps (for INVESTIGATE) */}
           {result.react_steps?.length > 0 && (
             <ChatInterface reactSteps={result.react_steps} decision={result.decision} />
           )}
 
-          {/* Fraud Ring (for ESCALATE) */}
           {result.fraud_ring?.ring_detected && (
-            <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/5">
-              <p className="text-xs text-red-400 font-semibold mb-1">🚨 Fraud Ring Detected</p>
-              <p className="text-xs text-gray-400">{result.fraud_ring.message}</p>
+            <div className="rounded-3xl border border-red-500/30 bg-red-500/5 p-4">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-red-300">Fraud ring detected</p>
+              <p className="text-sm text-gray-400">{result.fraud_ring.message}</p>
             </div>
           )}
 
-          {/* Case Brief (for ESCALATE) */}
           {result.action?.case_brief && (
-            <div className="p-3 rounded-lg border border-gray-700 bg-gray-800/50">
-              <p className="text-xs text-gray-500 mb-1">📋 Case Brief — Top Signals:</p>
+            <div className="rounded-3xl border border-gray-700 bg-gray-800/50 p-4">
+              <p className="mb-2 text-xs font-medium uppercase tracking-[0.18em] text-gray-500">Case brief</p>
               {result.action.case_brief.top_risk_signals?.slice(0, 3).map((sig, i) => (
-                <p key={i} className="text-xs text-gray-400">• {sig.signal}: {sig.detail}</p>
+                <p key={i} className="text-sm text-gray-400">• {sig.signal}: {sig.detail}</p>
               ))}
             </div>
           )}
 
-          {/* Store Credit (for INVESTIGATE) */}
           {result.action?.type === 'store_credit_offer' && (
-            <div className="p-3 rounded-lg border border-green-500/20 bg-green-500/5">
-              <p className="text-xs text-green-400">🎁 Store credit offered: ₹{result.action.credit_amount} (₹{result.action.cash_refund_amount} + ₹{result.action.bonus} bonus)</p>
+            <div className="rounded-3xl border border-green-500/20 bg-green-500/5 p-4">
+              <p className="text-sm text-green-300">Store credit offered: ₹{result.action.credit_amount} (₹{result.action.cash_refund_amount} + ₹{result.action.bonus} bonus)</p>
             </div>
           )}
 
-          {/* Pine Labs ref (for AUTO_APPROVE) */}
           {result.action?.pine_labs && (
-            <div className="p-3 rounded-lg border border-green-500/20 bg-green-500/5">
-              <p className="text-xs text-green-400">✅ Pine Labs refund: {result.action.pine_labs.pine_labs_ref} — ₹{result.action.amount}</p>
-              <p className="text-xs text-gray-500">{result.action.is_returnless ? 'Returnless' : 'Return pickup scheduled'}</p>
+            <div className="rounded-3xl border border-green-500/20 bg-green-500/5 p-4">
+              <p className="text-sm text-green-300">Pine Labs refund: {result.action.pine_labs.pine_labs_ref} — ₹{result.action.amount}</p>
+              <p className="mt-1 text-xs text-gray-500">{result.action.is_returnless ? 'Returnless' : 'Return pickup scheduled'}</p>
             </div>
           )}
 
-          {/* Reasoning (collapsed) */}
-          <details className="text-xs">
+          <details className="text-sm">
             <summary className="text-gray-500 cursor-pointer hover:text-gray-300">Show 10-signal breakdown</summary>
             <div className="mt-2">
               <ReasoningChain steps={result.reasoning_chain || []} />
@@ -200,31 +195,31 @@ export default function DemoPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4">
-      <div className="mb-6 text-center">
-        <h1 className="text-4xl font-bold text-white">⚡ RefundPilot Live Demo</h1>
-        <p className="text-gray-400 mt-2 text-lg">3 customers. 3 outcomes. One autonomous agent.</p>
-        <p className="text-gray-600 mt-1 text-sm">Same system, same 10 signals, same 4 seconds — but different decisions.</p>
+    <div className="page-shell">
+      <div className="page-header items-center text-center">
+        <div className="inline-flex items-center rounded-full border border-slate-700/80 bg-slate-900/80 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+          Live demo
+        </div>
+        <h1 className="page-title">RefundPilot Live Demo</h1>
+        <p className="page-subtitle mx-auto">Three customer profiles, one decision engine, and a cleaner side-by-side view of how the system approves, investigates, or escalates.</p>
       </div>
 
-      {/* Controls */}
-      <div className="flex justify-center gap-3 mb-6">
+      <div className="mb-8 flex flex-wrap justify-center gap-3">
         <button
           onClick={runAll}
           disabled={allRunning}
-          className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm disabled:opacity-50 transition-colors"
+          className="rounded-2xl bg-blue-600 px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
         >
-          {allRunning ? '🤖 Running All 3...' : '🚀 Run All 3 Scenarios'}
+          {allRunning ? 'Running all 3...' : 'Run all 3 scenarios'}
         </button>
         {Object.keys(results).length > 0 && (
-          <button onClick={reset} className="px-6 py-3 rounded-xl border border-gray-700 text-gray-400 text-sm hover:text-white">
+          <button onClick={reset} className="rounded-2xl border border-gray-700 px-7 py-4 text-base text-gray-400 hover:text-white">
             Reset
           </button>
         )}
       </div>
 
-      {/* 3 Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2 2xl:grid-cols-3">
         {SCENARIOS.map(s => (
           <DemoCard
             key={s.key}
@@ -236,17 +231,28 @@ export default function DemoPage() {
         ))}
       </div>
 
-      {/* Pitch Points */}
       {Object.keys(results).length === 3 && (
-        <div className="mt-8 p-6 bg-gray-900 rounded-2xl border border-gray-800">
-          <h3 className="text-lg font-semibold text-white mb-3">Key Takeaways for Judges</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-400">
-            <p>⚡ Decision in {Math.max(...Object.values(results).map(r => r.processing_time_ms / 1000)).toFixed(1)}s — not 15 days</p>
-            <p>🧮 Deterministic scoring: same input → same output, always</p>
-            <p>🤖 AI decides gray areas, math decides clear cases</p>
-            <p>🕸️ Cross-merchant + fraud ring detection — only on Pine Labs</p>
-            <p>📋 Pre-built case briefs for escalated refunds</p>
-            <p>🎁 Smart store credit negotiation retains revenue</p>
+        <div className="glass-panel mt-8 p-7 xl:p-8">
+          <h3 className="section-title mb-4">Key Takeaways for Judges</h3>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="rounded-3xl border border-gray-800 bg-gray-800/45 p-4 text-sm text-gray-400">
+              Decisions completed in {Math.max(...Object.values(results).map(r => r.processing_time_ms / 1000)).toFixed(1)}s instead of a multi-day manual loop.
+            </div>
+            <div className="rounded-3xl border border-gray-800 bg-gray-800/45 p-4 text-sm text-gray-400">
+              Deterministic scoring keeps the same input aligned to the same outcome every time.
+            </div>
+            <div className="rounded-3xl border border-gray-800 bg-gray-800/45 p-4 text-sm text-gray-400">
+              The same engine can auto-approve, investigate, or escalate without changing modes.
+            </div>
+            <div className="rounded-3xl border border-gray-800 bg-gray-800/45 p-4 text-sm text-gray-400">
+              Network intelligence spots cross-merchant fraud patterns that a single merchant cannot see alone.
+            </div>
+            <div className="rounded-3xl border border-gray-800 bg-gray-800/45 p-4 text-sm text-gray-400">
+              Escalated refunds already include a case brief, so operations teams do not start from scratch.
+            </div>
+            <div className="rounded-3xl border border-gray-800 bg-gray-800/45 p-4 text-sm text-gray-400">
+              Store credit negotiation helps recover margin while still closing borderline cases quickly.
+            </div>
           </div>
         </div>
       )}

@@ -1,9 +1,39 @@
 import { useState } from 'react';
 
 const PRESETS = {
-  default: { label: 'Default', desc: 'Balanced for general merchants' },
-  fashion: { label: 'Fashion Mode', desc: 'Higher weight on delivery contradiction (wardrobing detection)' },
-  electronics: { label: 'Electronics Mode', desc: 'Higher weight on amount risk (high-value items)' },
+  default: {
+    label: 'Balanced',
+    desc: 'Good default for mixed catalogs and regular refund flows.',
+    summary: 'Keeps genuine refunds fast while still catching obvious abuse.',
+    highlights: ['Broad retail coverage', 'Stable approval lane', 'Low tuning overhead'],
+    emphasis: [
+      { label: 'Delivery mismatch', value: 68 },
+      { label: 'Cross-merchant history', value: 74 },
+      { label: 'Amount sensitivity', value: 52 },
+    ],
+  },
+  fashion: {
+    label: 'Fashion',
+    desc: 'Optimised for return-heavy categories and wardrobing behaviour.',
+    summary: 'Adds more scrutiny when claims conflict with delivery signals or repeat return patterns.',
+    highlights: ['Wardrobing control', 'Repeat fit claim tracking', 'Lower value item tolerance'],
+    emphasis: [
+      { label: 'Delivery mismatch', value: 84 },
+      { label: 'Claim repetition', value: 76 },
+      { label: 'Amount sensitivity', value: 38 },
+    ],
+  },
+  electronics: {
+    label: 'Electronics',
+    desc: 'Built for higher-value items where a single fraudulent refund costs more.',
+    summary: 'Leans harder on amount, scripted messaging, and suspicious loss claims.',
+    highlights: ['High-value protection', 'Serial defect claim scrutiny', 'Escalation on costly outliers'],
+    emphasis: [
+      { label: 'Delivery mismatch', value: 66 },
+      { label: 'Cross-merchant history', value: 72 },
+      { label: 'Amount sensitivity', value: 88 },
+    ],
+  },
 };
 
 export default function MerchantPresets({ onPresetChange }) {
@@ -14,48 +44,65 @@ export default function MerchantPresets({ onPresetChange }) {
     if (onPresetChange) onPresetChange(key);
   };
 
-  return (
-    <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
-      <h2 className="text-lg font-semibold text-white mb-4">⚙️ Merchant Weight Presets</h2>
-      <p className="text-xs text-gray-500 mb-3">Different merchant categories have different fraud patterns. Select a preset to adjust signal weights.</p>
+  const currentPreset = PRESETS[active];
 
-      <div className="grid grid-cols-3 gap-3">
+  return (
+    <div className="glass-panel p-7 xl:p-8">
+      <h2 className="section-title">Merchant playbooks</h2>
+      <p className="section-copy mt-2">Choose the operating profile that matches the catalog. The dashboard keeps the explanation merchant-facing instead of exposing raw model weights.</p>
+
+      <div className="mt-5 grid gap-3 lg:grid-cols-3">
         {Object.entries(PRESETS).map(([key, preset]) => (
           <button
             key={key}
             onClick={() => handleChange(key)}
-            className={`p-4 rounded-xl border text-left transition-all ${
+            className={`rounded-3xl border p-5 text-left transition-all ${
               active === key
-                ? 'border-blue-500 bg-blue-500/10'
+                ? 'border-blue-500/40 bg-blue-500/10'
                 : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
             }`}
           >
-            <p className={`text-sm font-semibold ${active === key ? 'text-blue-400' : 'text-white'}`}>
+            <p className={`text-lg font-semibold ${active === key ? 'text-blue-300' : 'text-white'}`}>
               {preset.label}
             </p>
-            <p className="text-xs text-gray-500 mt-1">{preset.desc}</p>
+            <p className="mt-2 text-sm leading-relaxed text-gray-400">{preset.desc}</p>
           </button>
         ))}
       </div>
 
-      {/* Weight comparison */}
-      <div className="mt-4 p-3 rounded-lg bg-gray-800/50 border border-gray-700">
-        <p className="text-xs text-gray-500 mb-2">Key weight differences for <span className="text-white">{PRESETS[active].label}</span>:</p>
-        {active === 'fashion' && (
-          <div className="text-xs text-gray-400 space-y-1">
-            <p>📈 Delivery contradiction: 0.14 → <span className="text-yellow-400">0.18</span> (wardrobing)</p>
-            <p>📉 Amount risk: 0.07 → <span className="text-green-400">0.05</span> (fashion is cheaper)</p>
+      <div className="mt-5 rounded-3xl border border-gray-700 bg-gray-800/45 p-5">
+        <p className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500">{currentPreset.label} playbook</p>
+        <p className="mt-3 text-base leading-relaxed text-gray-200">{currentPreset.summary}</p>
+
+        <div className="mt-5 grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+          <div>
+            <p className="text-sm font-medium text-white">Focus areas</p>
+            <div className="mt-4 space-y-4">
+              {currentPreset.emphasis.map((item) => (
+                <div key={item.label}>
+                  <div className="mb-2 flex items-center justify-between text-sm">
+                    <span className="text-gray-300">{item.label}</span>
+                    <span className="text-white">{item.value}%</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-gray-700/80">
+                    <div className="h-2 rounded-full bg-blue-400" style={{ width: `${item.value}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        )}
-        {active === 'electronics' && (
-          <div className="text-xs text-gray-400 space-y-1">
-            <p>📈 Amount risk: 0.07 → <span className="text-yellow-400">0.12</span> (high-value items)</p>
-            <p>📈 Sentiment: 0.06 → <span className="text-yellow-400">0.08</span> (scripted claims)</p>
+
+          <div>
+            <p className="text-sm font-medium text-white">Why merchants use this</p>
+            <div className="mt-4 space-y-2">
+              {currentPreset.highlights.map((item) => (
+                <div key={item} className="rounded-2xl border border-gray-700 bg-gray-900/50 px-4 py-3 text-sm text-gray-300">
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
-        )}
-        {active === 'default' && (
-          <p className="text-xs text-gray-400">Standard balanced weights across all 10 signals.</p>
-        )}
+        </div>
       </div>
     </div>
   );

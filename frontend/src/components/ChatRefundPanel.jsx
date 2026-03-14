@@ -71,73 +71,69 @@ export default function ChatRefundPanel() {
   };
 
   return (
-    <div className="bg-gray-900 rounded-2xl border border-gray-800 flex flex-col" style={{ height: '600px' }}>
-      {/* Header */}
-      <div className="p-4 border-b border-gray-800 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-lg">🤖</div>
+    <div className="glass-panel flex flex-col overflow-hidden" style={{ minHeight: '680px', height: '72vh' }}>
+      <div className="flex items-center gap-4 border-b border-gray-800 px-6 py-5">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/20 text-xl">🤖</div>
         <div>
-          <h2 className="text-sm font-semibold text-white">RefundPilot Agent</h2>
-          <p className="text-xs text-green-400">Online · Responds instantly</p>
+          <h2 className="text-base font-semibold text-white">RefundPilot Agent</h2>
+          <p className="text-sm text-green-400">Online · Responds instantly</p>
         </div>
         <div className="ml-auto flex gap-2">
           {['en', 'hi'].map(l => (
             <button key={l} onClick={() => setLanguage(l)}
-              className={`px-2 py-0.5 rounded text-xs ${language === l ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-500'}`}>
+              className={`rounded-full px-3 py-1 text-sm ${language === l ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-500'}`}>
               {l === 'en' ? 'EN' : 'हि'}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Chat messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30,40,60,0.3) 0%, transparent 100%)' }}>
+      <div className="flex-1 space-y-4 overflow-y-auto p-5 xl:p-6" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30,40,60,0.3) 0%, transparent 100%)' }}>
         {history.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[80%] p-3 rounded-2xl text-sm whitespace-pre-line ${
+            <div className={`max-w-[82%] whitespace-pre-line rounded-3xl p-4 text-base ${
               msg.role === 'user'
                 ? 'bg-blue-600 text-white rounded-br-md'
                 : 'bg-gray-800 text-gray-200 rounded-bl-md border border-gray-700'
             }`}>
               {msg.content}
               {msg.submitted && (
-                <span className="block mt-2 text-xs text-green-300 font-medium">✅ Refund {msg.refundId} processed</span>
+                <span className="mt-3 block text-sm font-medium text-green-300">✅ Refund {msg.refundId} processed</span>
               )}
-              <span className={`block mt-1 text-xs ${msg.role === 'user' ? 'text-blue-200' : 'text-gray-500'}`}>{msg.ts}</span>
+              <span className={`mt-2 block text-xs ${msg.role === 'user' ? 'text-blue-200' : 'text-gray-500'}`}>{msg.ts}</span>
             </div>
           </div>
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-gray-800 border border-gray-700 p-3 rounded-2xl rounded-bl-md">
-              <span className="text-gray-400 text-sm">typing...</span>
+            <div className="rounded-2xl rounded-bl-md border border-gray-700 bg-gray-800 p-4">
+              <span className="text-base text-gray-400">typing...</span>
             </div>
           </div>
         )}
         <div ref={chatEndRef} />
       </div>
 
-      {/* Quick prompts */}
-      <div className="px-4 py-2 flex gap-2 overflow-x-auto border-t border-gray-800/50">
+      <div className="flex gap-2 overflow-x-auto border-t border-gray-800/50 px-5 py-3">
         {QUICK_PROMPTS.map((p, i) => (
           <button key={i} onClick={() => handleSend(p)}
-            className="px-3 py-1.5 rounded-full bg-gray-800 border border-gray-700 text-gray-400 text-xs whitespace-nowrap hover:text-white hover:border-gray-500 shrink-0">
+            className="shrink-0 rounded-full border border-gray-700 bg-gray-800 px-4 py-2 text-sm whitespace-nowrap text-gray-400 hover:border-gray-500 hover:text-white">
             {p}
           </button>
         ))}
       </div>
 
-      {/* Input */}
-      <div className="p-3 border-t border-gray-800 flex gap-2">
+      <div className="flex gap-3 border-t border-gray-800 px-5 py-4">
         <input
           type="text"
           value={message}
           onChange={e => setMessage(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSend()}
           placeholder="Type your refund request..."
-          className="flex-1 p-3 rounded-full bg-gray-800 border border-gray-700 text-white text-sm focus:border-green-500 focus:outline-none"
+          className="flex-1 rounded-full border border-gray-700 bg-gray-800 px-5 py-3.5 text-base text-white focus:border-green-500 focus:outline-none"
         />
         <button onClick={() => handleSend()} disabled={loading || !message.trim()}
-          className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center disabled:opacity-30">
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-white disabled:opacity-30">
           ➤
         </button>
       </div>

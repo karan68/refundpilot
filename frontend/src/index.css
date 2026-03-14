@@ -2,9 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: dark;
+  font-family: 'Segoe UI Variable Text', 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 22%),
+    linear-gradient(180deg, #030712 0%, #020617 46%, #020617 100%);
+}
+
+html {
+  background: #020617;
+  font-size: 17px;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
+  background: transparent;
+  color: #e5e7eb;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer components {
+  .page-shell {
+    @apply mx-auto w-full max-w-[1680px] px-6 py-8 lg:px-8 xl:px-12 xl:py-10 2xl:px-16;
+  }
+
+  .page-header {
+    @apply mb-8 flex flex-col gap-2;
+  }
+
+  .page-title {
+    @apply text-4xl font-semibold tracking-tight text-white xl:text-5xl;
+  }
+
+  .page-subtitle {
+    @apply max-w-4xl text-base text-slate-400 xl:text-lg;
+  }
+
+  .glass-panel {
+    @apply rounded-[28px] border border-slate-800/90 bg-slate-900/75 shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-sm;
+  }
+
+  .section-title {
+    @apply text-xl font-semibold text-white;
+  }
+
+  .section-copy {
+    @apply text-sm text-slate-400 xl:text-base;
+  }
 }
 
 /* Custom scrollbar */

@@ -9,30 +9,30 @@ import MerchantPresets from '../components/MerchantPresets';
 
 export default function DashboardPage() {
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Merchant Dashboard</h1>
-        <p className="text-gray-400 mt-1">Real-time refund analytics, fraud detection, and agent performance</p>
+    <div className="page-shell">
+      <div className="page-header">
+        <div className="inline-flex w-fit items-center rounded-full border border-slate-700/80 bg-slate-900/80 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+          Merchant view
+        </div>
+        <h1 className="page-title">Merchant Dashboard</h1>
+        <p className="page-subtitle">A clearer view of refund health, active risk clusters, and the actions that need merchant attention.</p>
       </div>
 
       <AlertBanner />
       <DashboardStats />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
         <MerchantQuery />
         <MerchantPresets />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
         <FraudGraph />
         <CohortInsights />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
         <ReconciliationTab />
-      </div>
-
-      <div className="mt-6">
         <AuditLog />
       </div>
     </div>
