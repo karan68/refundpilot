@@ -27,8 +27,12 @@ Thumbs.db
 .idea/
 *.code-workspace
 
-# Docs (push separately)
-*.md
+# Docs (keep README, ignore others)
+plan.md
+test.md
+start.md
+pine_lab_docs.md
+api_pine.md
 
 # Temp
 /temp/
