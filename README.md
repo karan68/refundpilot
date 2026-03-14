@@ -312,19 +312,19 @@ Refund operations break when teams pick the wrong extreme.
 
 ### Human on every request doesn't scale
 
-Klarna said its AI assistant handled **2.3 million conversations in one month**, did the equivalent work of **700 full-time agents**, cut average resolution time to **under 2 minutes from 11**, reduced repeat inquiries by **25%**, and was estimated to improve profit by **$40M in 2024**. That is the operational case for automating low-risk, repetitive service work instead of routing every refund through a human queue.
+[Klarna reported](https://www.klarna.com/international/press/klarna-ai-assistant-handles-two-thirds-of-customer-service-chats-in-its-first-month/) that its AI assistant handled **2.3 million conversations in one month**, did the equivalent work of **700 full-time agents**, cut average resolution time to **under 2 minutes from 11**, reduced repeat inquiries by **25%**, and was estimated to improve profit by **$40M in 2024**. That is the operational case for automating low-risk, repetitive service work instead of routing every refund through a human queue.
 
 ### AI-only chat burns trust
 
-PwC reports that **32% of customers would stop doing business with a brand they love after one bad experience**, **59% after several bad experiences**, and **82% of U.S. consumers want more human interaction as technology improves**. Refunds are high-emotion moments: a sloppy bot script can save short-term support cost while quietly destroying customer lifetime value.
+[PwC reports](https://www.pwc.com/us/en/services/consulting/library/consumer-intelligence-series/future-of-customer-experience.html) that **32% of customers would stop doing business with a brand they love after one bad experience**, **59% after several bad experiences**, and **82% of U.S. consumers want more human interaction as technology improves**. Refunds are high-emotion moments: a sloppy bot script can save short-term support cost while quietly destroying customer lifetime value.
 
 ### Payment networks already prove the value of shared risk data
 
-Stripe says Radar reduces fraud by **38% on average** using network-wide signals across more than **$1.4T in annual payment volume**. Adyen positions its risk products around **trillions of dollars in global payments data** to reduce losses, chargeback costs, and operational burden. The market already validates network-scale intelligence; it is just being applied mostly to payment fraud and disputes, not refund triage.
+[Stripe says Radar](https://stripe.com/in/radar) reduces fraud by **38% on average** using network-wide signals across more than **$1.4T in annual payment volume**. [Adyen positions](https://www.adyen.com/risk-management) its risk products around **trillions of dollars in global payments data** to reduce losses, chargeback costs, and operational burden. The market already validates network-scale intelligence; it is just being applied mostly to payment fraud and disputes, not refund triage.
 
 ### Public payment-company check
 
-We checked public product pages from Stripe Radar, Adyen Risk Management, and Klarna's AI assistant:
+We checked public product pages from [Stripe Radar](https://stripe.com/in/radar), [Adyen Risk Management](https://www.adyen.com/risk-management), and [Klarna's AI assistant](https://www.klarna.com/international/press/klarna-ai-assistant-handles-two-thirds-of-customer-service-chats-in-its-first-month/):
 
 - **Stripe / Adyen** are strong on payment fraud scoring, manual review tooling, and dispute prevention.
 - **Klarna** is strong on AI customer service automation for refunds and returns, while still allowing customers to choose live agents.

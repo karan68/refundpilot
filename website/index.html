@@ -404,10 +404,48 @@
     }
     .impact-card h4 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: .55rem; }
     .impact-card p { font-size: .86rem; color: #9090a8; }
+    .impact-card p a {
+      color: #c6bcff; border-bottom: 1px solid rgba(198,188,255,.28);
+    }
+    .impact-card p a:hover { color: #fff; border-bottom-color: rgba(255,255,255,.5); }
     .impact-source {
       margin-top: 1rem; font-size: .75rem; color: #6f6f86;
     }
     .impact-source a { color: #a29bfe; }
+    .impact-why {
+      margin-top: 2rem; padding: 1.4rem;
+      background: linear-gradient(135deg, rgba(255,255,255,.04), rgba(108,92,231,.08));
+      border: 1px solid rgba(255,255,255,.08); border-radius: 18px;
+    }
+    .impact-why-title {
+      font-size: .78rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: #00cec9; margin-bottom: .85rem;
+    }
+    .impact-flow {
+      display: grid; grid-template-columns: 1fr auto 1fr auto 1.2fr;
+      gap: 1rem; align-items: stretch;
+    }
+    .impact-node {
+      background: rgba(10,10,15,.55); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px; padding: 1.1rem;
+    }
+    .impact-node-label {
+      display: inline-block; margin-bottom: .6rem; padding: .2rem .55rem;
+      border-radius: 999px; font-size: .68rem; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; background: rgba(255,255,255,.06); color: #a0a0b6;
+    }
+    .impact-node strong {
+      display: block; font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: .35rem;
+    }
+    .impact-node p { font-size: .82rem; color: #8f8fa6; }
+    .impact-node.highlight {
+      background: linear-gradient(135deg, rgba(0,206,201,.12), rgba(108,92,231,.16));
+      border-color: rgba(0,206,201,.28);
+    }
+    .impact-arrow {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.55rem; color: #7f78cf;
+    }
 
     /* ===== FEATURES GRID ===== */
     .features-grid {
@@ -551,6 +589,8 @@
       .arch-grid { grid-template-columns: 1fr; }
       .hero-actions { flex-direction: column; }
       .hero-button { width: 100%; max-width: 320px; }
+      .impact-flow { grid-template-columns: 1fr; }
+      .impact-arrow { display: none; }
     }
 
     /* ===== SCROLL ANIMATIONS ===== */
@@ -1110,12 +1150,35 @@
       <h2 class="section-title">Real-World Impact, Not Just a Demo</h2>
       <p class="section-desc">Merchants lose money when every refund waits for a human, and they lose customers when a sloppy bot handles every case the same way. RefundPilot is built for the middle path: automate clear cases, preserve human escalation for sensitive ones, and connect the decision directly to payment rails.</p>
 
+      <div class="impact-why fade-up">
+        <div class="impact-why-title">Why This Matters</div>
+        <div class="impact-flow">
+          <div class="impact-node">
+            <span class="impact-node-label">Human-only</span>
+            <strong>Queue cost keeps climbing</strong>
+            <p>Every refund waits for headcount, training, QA, and repeated manual review.</p>
+          </div>
+          <div class="impact-arrow">→</div>
+          <div class="impact-node">
+            <span class="impact-node-label">AI-only</span>
+            <strong>Speed without trust backfires</strong>
+            <p>Customers get fast responses, but poor judgment and no real escalation path increase churn.</p>
+          </div>
+          <div class="impact-arrow">→</div>
+          <div class="impact-node highlight">
+            <span class="impact-node-label">RefundPilot</span>
+            <strong>Automate clear cases. Escalate the rest.</strong>
+            <p>Cheap where math is enough, human where nuance matters, and connected to the payment system that executes the outcome.</p>
+          </div>
+        </div>
+      </div>
+
       <div class="impact-grid fade-up">
         <div class="impact-card">
           <div class="impact-kicker">Klarna, 2024</div>
           <div class="impact-metric">$40M</div>
           <h4>Automation saves real operating cost</h4>
-          <p>Klarna said its AI assistant handled 2.3 million conversations in one month, did the equivalent work of 700 full-time agents, cut resolution time to under 2 minutes from 11, and was estimated to improve profit by $40 million in 2024. That is the case for automating low-risk refund work.</p>
+          <p><a href="https://www.klarna.com/international/press/klarna-ai-assistant-handles-two-thirds-of-customer-service-chats-in-its-first-month/" target="_blank" rel="noopener noreferrer">Klarna reported</a> that its AI assistant handled 2.3 million conversations in one month, did the equivalent work of 700 full-time agents, cut resolution time to under 2 minutes from 11, and was estimated to improve profit by $40 million in 2024. That is the case for automating low-risk refund work.</p>
           <div class="impact-source">Source: <a href="https://www.klarna.com/international/press/klarna-ai-assistant-handles-two-thirds-of-customer-service-chats-in-its-first-month/" target="_blank" rel="noopener noreferrer">Klarna AI assistant announcement</a></div>
         </div>
 
@@ -1123,7 +1186,7 @@
           <div class="impact-kicker">PwC Customer Experience</div>
           <div class="impact-metric">32%</div>
           <h4>Bad support destroys lifetime value</h4>
-          <p>PwC reports 32% of customers would leave a brand they love after one bad experience, 59% after several bad experiences, and 82% of U.S. consumers want more human interaction as technology improves. Pure bot-first refund flows can reduce cost and still increase churn.</p>
+          <p><a href="https://www.pwc.com/us/en/services/consulting/library/consumer-intelligence-series/future-of-customer-experience.html" target="_blank" rel="noopener noreferrer">PwC reports</a> that 32% of customers would leave a brand they love after one bad experience, 59% after several bad experiences, and 82% of U.S. consumers want more human interaction as technology improves. Pure bot-first refund flows can reduce cost and still increase churn.</p>
           <div class="impact-source">Source: <a href="https://www.pwc.com/us/en/services/consulting/library/consumer-intelligence-series/future-of-customer-experience.html" target="_blank" rel="noopener noreferrer">PwC, Experience is everything. Get it right.</a></div>
         </div>
 
@@ -1131,7 +1194,7 @@
           <div class="impact-kicker">Payment Network Evidence</div>
           <div class="impact-metric">38%</div>
           <h4>Shared payment data already cuts losses</h4>
-          <p>Stripe says Radar reduces fraud by 38% on average using network-wide signals across more than $1.4T in annual payment volume. Adyen positions its risk products around trillions of dollars in payment data to reduce losses, chargebacks, and operational burden. The market already validates network-scale intelligence.</p>
+          <p><a href="https://stripe.com/in/radar" target="_blank" rel="noopener noreferrer">Stripe says</a> Radar reduces fraud by 38% on average using network-wide signals across more than $1.4T in annual payment volume. <a href="https://www.adyen.com/risk-management" target="_blank" rel="noopener noreferrer">Adyen positions</a> its risk products around trillions of dollars in payment data to reduce losses, chargebacks, and operational burden. The market already validates network-scale intelligence.</p>
           <div class="impact-source">Sources: <a href="https://stripe.com/in/radar" target="_blank" rel="noopener noreferrer">Stripe Radar</a> · <a href="https://www.adyen.com/risk-management" target="_blank" rel="noopener noreferrer">Adyen Risk Management</a></div>
         </div>
 
@@ -1139,7 +1202,7 @@
           <div class="impact-kicker">Market Gap</div>
           <div class="impact-metric">F28</div>
           <h4>Refund decisioning is still missing</h4>
-          <p>On public product pages, Stripe and Adyen market payment fraud scoring and dispute tooling. Klarna markets AI service automation and still lets customers choose live agents. We did not find a public payment-native product page describing autonomous refund triage plus refund execution and settlement tracking in one workflow.</p>
+          <p>On public product pages, <a href="https://stripe.com/in/radar" target="_blank" rel="noopener noreferrer">Stripe</a> and <a href="https://www.adyen.com/risk-management" target="_blank" rel="noopener noreferrer">Adyen</a> market payment fraud scoring and dispute tooling. <a href="https://www.klarna.com/international/press/klarna-ai-assistant-handles-two-thirds-of-customer-service-chats-in-its-first-month/" target="_blank" rel="noopener noreferrer">Klarna</a> markets AI service automation and still lets customers choose live agents. We did not find a public payment-native product page describing autonomous refund triage plus refund execution and settlement tracking in one workflow.</p>
           <div class="impact-source">This is RefundPilot's integration feature: Pine Labs as both signal rail and action rail.</div>
         </div>
       </div>
