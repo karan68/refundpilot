@@ -2,6 +2,8 @@
 # Deletes old DB, kills old processes, starts backend + frontend
 # Usage: .\start.ps1
 
+$root = Split-Path -Parent $MyInvocation.MyCommand.Path
+
 Write-Host "🤖 RefundPilot — Fresh Start" -ForegroundColor Cyan
 Write-Host "================================"
 
@@ -9,18 +11,21 @@ Write-Host "================================"
 Write-Host "🔄 Killing old processes..." -ForegroundColor Yellow
 Get-NetTCPConnection -LocalPort 8001 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
 Get-NetTCPConnection -LocalPort 5173 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
+Get-NetTCPConnection -LocalPort 5174 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
 Start-Sleep 2
 
 # Delete old database
 Write-Host "🗑️  Deleting old database..." -ForegroundColor Yellow
-Remove-Item "$PSScriptRoot\backend\refundpilot.db" -Force -ErrorAction SilentlyContinue
+Remove-Item "$root\backend\refundpilot.db" -Force -ErrorAction SilentlyContinue
 
-# Start backend
+# Patch frontend rollup
+Write-Host "🔧 Patching frontend..." -ForegroundColor Yellow
+Set-Location "$root\frontend"
+node patch-rollup.cjs 2>$null
+
+# Start backend in background
 Write-Host "🚀 Starting backend on port 8001..." -ForegroundColor Green
-$backendJob = Start-Job -ScriptBlock {
-    Set-Location $using:PSScriptRoot\backend
-    python -m uvicorn main:app --port 8001
-}
+Start-Process -NoNewWindow -FilePath "python" -ArgumentList "-m","uvicorn","main:app","--port","8001" -WorkingDirectory "$root\backend"
 
 Start-Sleep 4
 
@@ -29,17 +34,12 @@ try {
     $health = Invoke-RestMethod -Uri "http://localhost:8001/health" -Method Get -ErrorAction Stop
     Write-Host "✅ Backend running: $($health.status)" -ForegroundColor Green
 } catch {
-    Write-Host "⚠️  Backend may still be starting..." -ForegroundColor Yellow
+    Write-Host "⚠️  Backend may still be starting... wait a few seconds" -ForegroundColor Yellow
 }
 
-# Start frontend
-Write-Host "🎨 Starting frontend..." -ForegroundColor Green
-Set-Location "$PSScriptRoot\frontend"
-node patch-rollup.cjs 2>$null
-$frontendJob = Start-Job -ScriptBlock {
-    Set-Location $using:PSScriptRoot\frontend
-    npx vite --port 5173
-}
+# Start frontend in background
+Write-Host "🎨 Starting frontend on port 5173..." -ForegroundColor Green
+Start-Process -NoNewWindow -FilePath "npx" -ArgumentList "vite","--port","5173" -WorkingDirectory "$root\frontend"
 
 Start-Sleep 3
 
@@ -51,20 +51,5 @@ Write-Host "   Frontend: http://localhost:5173"
 Write-Host "   API Docs: http://localhost:8001/docs"
 Write-Host "   Demo:     http://localhost:5173/demo"
 Write-Host ""
-Write-Host "Press Ctrl+C to stop. Run 'Get-Job | Stop-Job' to clean up." -ForegroundColor Gray
-
-# Wait for user interrupt
-try {
-    while ($true) {
-        Start-Sleep 5
-        # Check if jobs are still running
-        if ($backendJob.State -ne 'Running') {
-            Write-Host "⚠️  Backend stopped. Restarting..." -ForegroundColor Yellow
-            Receive-Job $backendJob
-        }
-    }
-} finally {
-    Write-Host "`n🛑 Stopping servers..." -ForegroundColor Red
-    Stop-Job $backendJob, $frontendJob -ErrorAction SilentlyContinue
-    Remove-Job $backendJob, $frontendJob -ErrorAction SilentlyContinue
-}
+Write-Host "To stop: close this terminal or run:" -ForegroundColor Gray
+Write-Host "  Get-NetTCPConnection -LocalPort 8001,5173 | ForEach-Object { Stop-Process -Id `$_.OwningProcess -Force }" -ForegroundColor Gray

@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RefundPilot — The Instant Justice Machine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e8;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    ::selection { background: #6c5ce7; color: #fff; }
+    a { color: #a29bfe; text-decoration: none; transition: color .2s; }
+    a:hover { color: #6c5ce7; }
+    code, .mono { font-family: 'JetBrains Mono', monospace; }
+    img { max-width: 100%; }
+
+    /* ===== GRADIENT BACKGROUND BLOBS ===== */
+    .bg-blob {
+      position: fixed; border-radius: 50%; filter: blur(120px); opacity: .12;
+      pointer-events: none; z-index: 0;
+    }
+    .blob-1 { width: 600px; height: 600px; background: #6c5ce7; top: -200px; left: -100px; }
+    .blob-2 { width: 500px; height: 500px; background: #00cec9; bottom: 10%; right: -150px; }
+    .blob-3 { width: 400px; height: 400px; background: #fd79a8; top: 50%; left: 30%; }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(10,10,15,.85); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      padding: 0 2rem; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      font-weight: 800; font-size: 1.25rem; color: #fff;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .nav-brand .logo-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+    }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-links a {
+      font-size: .85rem; font-weight: 500; color: #a0a0b0;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta {
+      padding: .5rem 1.25rem; border-radius: 8px;
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      color: #fff !important; font-weight: 600; font-size: .85rem;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(108,92,231,.3); }
+
+    /* ===== SECTIONS ===== */
+    section { position: relative; z-index: 1; padding: 6rem 2rem; }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      text-align: center; padding-top: 80px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(108,92,231,.15); border: 1px solid rgba(108,92,231,.3);
+      border-radius: 999px; padding: .4rem 1.25rem; font-size: .8rem;
+      color: #a29bfe; font-weight: 500; margin-bottom: 2rem;
+    }
+    .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #00b894; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900;
+      line-height: 1.1; margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #fff 0%, #a29bfe 50%, #6c5ce7 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.3rem); color: #8888a0;
+      max-width: 700px; margin: 0 auto 2.5rem; line-height: 1.8;
+    }
+    .hero-sub em { color: #fd79a8; font-style: normal; font-weight: 600; }
+    .hero-stats {
+      display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap;
+      margin-top: 3rem;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat .num {
+      font-size: 2.5rem; font-weight: 800;
+      background: linear-gradient(135deg, #00cec9, #00b894);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-stat .label { font-size: .85rem; color: #6a6a80; margin-top: .25rem; }
+
+    /* ===== SECTION HEADERS ===== */
+    .section-label {
+      font-size: .75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 3px; color: #6c5ce7; margin-bottom: .75rem;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+      color: #fff; margin-bottom: 1rem; line-height: 1.2;
+    }
+    .section-desc {
+      font-size: 1.05rem; color: #8888a0; max-width: 700px; margin-bottom: 3rem;
+    }
+
+    /* ===== STORY SECTION ===== */
+    .story-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+      align-items: start;
+    }
+    .story-card {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px; padding: 2.5rem; position: relative; overflow: hidden;
+      transition: transform .3s, border-color .3s;
+    }
+    .story-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.12); }
+    .story-card.priya { border-left: 3px solid #00b894; }
+    .story-card.rohit { border-left: 3px solid #d63031; }
+    .story-card .card-emoji { font-size: 2.5rem; margin-bottom: 1rem; }
+    .story-card h3 { font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: .75rem; }
+    .story-card p { color: #8888a0; font-size: .95rem; }
+    .story-card .highlight {
+      display: inline-block; margin-top: 1rem; padding: .3rem .75rem;
+      border-radius: 6px; font-size: .8rem; font-weight: 600;
+    }
+    .story-card.priya .highlight { background: rgba(0,184,148,.15); color: #00b894; }
+    .story-card.rohit .highlight { background: rgba(214,48,49,.15); color: #d63031; }
+
+    /* ===== HOW IT WORKS ===== */
+    .flow-steps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem; margin-top: 2rem;
+    }
+    .flow-step {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 12px; padding: 1.5rem; text-align: center;
+      position: relative; transition: transform .3s, border-color .3s;
+    }
+    .flow-step:hover { transform: translateY(-3px); border-color: #6c5ce7; }
+    .flow-step .step-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      color: #fff; font-weight: 700; font-size: .85rem;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .flow-step h4 { font-weight: 700; color: #fff; margin-bottom: .5rem; font-size: .95rem; }
+    .flow-step p { font-size: .82rem; color: #8888a0; }
+    .flow-arrow {
+      display: none; align-self: center; color: #6c5ce7; font-size: 1.5rem;
+    }
+
+    /* ===== THREE TIER ===== */
+    .tiers {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+      margin-top: 2rem;
+    }
+    .tier-card {
+      border-radius: 16px; padding: 2rem; position: relative;
+      overflow: hidden; transition: transform .3s;
+    }
+    .tier-card:hover { transform: translateY(-4px); }
+    .tier-card.approve {
+      background: linear-gradient(135deg, rgba(0,184,148,.1), rgba(0,184,148,.02));
+      border: 1px solid rgba(0,184,148,.2);
+    }
+    .tier-card.investigate {
+      background: linear-gradient(135deg, rgba(253,203,110,.1), rgba(253,203,110,.02));
+      border: 1px solid rgba(253,203,110,.2);
+    }
+    .tier-card.escalate {
+      background: linear-gradient(135deg, rgba(214,48,49,.1), rgba(214,48,49,.02));
+      border: 1px solid rgba(214,48,49,.2);
+    }
+    .tier-range {
+      font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 800;
+      margin-bottom: .75rem;
+    }
+    .tier-card.approve .tier-range { color: #00b894; }
+    .tier-card.investigate .tier-range { color: #fdcb6e; }
+    .tier-card.escalate .tier-range { color: #d63031; }
+    .tier-card h4 { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: .5rem; }
+    .tier-card p { font-size: .88rem; color: #8888a0; }
+    .tier-tag {
+      display: inline-block; margin-top: 1rem; padding: .25rem .75rem;
+      border-radius: 6px; font-size: .75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .tier-card.approve .tier-tag { background: rgba(0,184,148,.2); color: #00b894; }
+    .tier-card.investigate .tier-tag { background: rgba(253,203,110,.2); color: #fdcb6e; }
+    .tier-card.escalate .tier-tag { background: rgba(214,48,49,.2); color: #d63031; }
+
+    /* ===== SIGNALS TABLE ===== */
+    .signals-table {
+      width: 100%; border-collapse: collapse; margin-top: 2rem;
+      font-size: .88rem;
+    }
+    .signals-table thead th {
+      text-align: left; padding: 1rem; font-weight: 600; color: #6c5ce7;
+      border-bottom: 2px solid rgba(108,92,231,.2);
+      font-size: .75rem; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .signals-table tbody td {
+      padding: .85rem 1rem; border-bottom: 1px solid rgba(255,255,255,.04);
+      color: #c0c0d0;
+    }
+    .signals-table tbody tr { transition: background .2s; }
+    .signals-table tbody tr:hover { background: rgba(108,92,231,.05); }
+    .signal-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 6px; font-weight: 700;
+      font-size: .7rem; color: #fff;
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    }
+    .weight-bar {
+      width: 60px; height: 6px; border-radius: 3px;
+      background: rgba(255,255,255,.06); position: relative; display: inline-block;
+    }
+    .weight-bar-fill { height: 100%; border-radius: 3px; background: #6c5ce7; }
+
+    /* ===== ARCHITECTURE DIAGRAMS ===== */
+    .arch-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem; margin-top: 2rem;
+    }
+    .arch-card {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px; padding: 2rem; cursor: pointer;
+      transition: all .3s; position: relative; overflow: hidden;
+    }
+    .arch-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #6c5ce7, #a29bfe, #00cec9);
+      opacity: 0; transition: opacity .3s;
+    }
+    .arch-card:hover { transform: translateY(-4px); border-color: rgba(108,92,231,.3); }
+    .arch-card:hover::before { opacity: 1; }
+    .arch-card .arch-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1rem;
+    }
+    .arch-card h4 { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: .5rem; }
+    .arch-card p { font-size: .85rem; color: #8888a0; }
+    .arch-card .click-hint {
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-size: .75rem; color: #6c5ce7; margin-top: 1rem; font-weight: 500;
+    }
+    .arch-card .click-hint svg { width: 14px; height: 14px; }
+
+    .arch-icon.sys { background: rgba(108,92,231,.15); }
+    .arch-icon.tier { background: rgba(0,184,148,.15); }
+    .arch-icon.signal { background: rgba(253,203,110,.15); }
+    .arch-icon.react { background: rgba(253,121,168,.15); }
+    .arch-icon.return { background: rgba(0,206,201,.15); }
+    .arch-icon.pine { background: rgba(85,239,196,.15); }
+    .arch-icon.layer { background: rgba(162,155,254,.15); }
+
+    /* ===== DEMO CARDS ===== */
+    .demo-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+      margin-top: 2rem;
+    }
+    .demo-card {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px; padding: 2rem; overflow: hidden;
+      transition: transform .3s;
+    }
+    .demo-card:hover { transform: translateY(-4px); }
+    .demo-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700;
+    }
+    .demo-card.priya-demo .demo-avatar { background: rgba(0,184,148,.15); color: #00b894; }
+    .demo-card.vikram-demo .demo-avatar { background: rgba(253,203,110,.15); color: #fdcb6e; }
+    .demo-card.rohit-demo .demo-avatar { background: rgba(214,48,49,.15); color: #d63031; }
+    .demo-card h4 { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: .25rem; }
+    .demo-card .demo-type { font-size: .8rem; font-weight: 600; margin-bottom: 1rem; }
+    .demo-card.priya-demo .demo-type { color: #00b894; }
+    .demo-card.vikram-demo .demo-type { color: #fdcb6e; }
+    .demo-card.rohit-demo .demo-type { color: #d63031; }
+    .demo-card .demo-detail { font-size: .85rem; color: #8888a0; margin-bottom: .5rem; }
+    .demo-card .demo-detail strong { color: #c0c0d0; }
+    .demo-signals {
+      display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem;
+    }
+    .demo-signal-tag {
+      font-size: .7rem; padding: .2rem .5rem; border-radius: 4px;
+      background: rgba(255,255,255,.05); color: #a0a0b0; font-weight: 500;
+    }
+    .demo-signal-tag.green { background: rgba(0,184,148,.1); color: #00b894; }
+    .demo-signal-tag.red { background: rgba(214,48,49,.1); color: #d63031; }
+    .demo-signal-tag.yellow { background: rgba(253,203,110,.1); color: #fdcb6e; }
+    .demo-score {
+      margin-top: 1.25rem; padding-top: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .demo-score-bar {
+      width: 100%; height: 8px; border-radius: 4px;
+      background: rgba(255,255,255,.06); overflow: hidden; margin-top: .5rem;
+    }
+    .demo-score-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+    .demo-card.priya-demo .demo-score-fill { width: 27%; background: #00b894; }
+    .demo-card.vikram-demo .demo-score-fill { width: 55%; background: #fdcb6e; }
+    .demo-card.rohit-demo .demo-score-fill { width: 82%; background: #d63031; }
+    .demo-score-label {
+      display: flex; justify-content: space-between; font-size: .75rem; color: #6a6a80;
+    }
+
+    /* ===== PINE LABS INTEGRATION ===== */
+    .pine-flow {
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 2rem;
+      align-items: start; margin-top: 2rem;
+    }
+    .pine-box {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px; padding: 2rem;
+    }
+    .pine-box h4 {
+      font-size: 1rem; font-weight: 700; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .pine-box ul { list-style: none; }
+    .pine-box li {
+      padding: .5rem 0; font-size: .88rem; color: #8888a0;
+      display: flex; align-items: flex-start; gap: .5rem;
+    }
+    .pine-box li::before { content: '→'; color: #6c5ce7; font-weight: 700; flex-shrink: 0; }
+    .pine-center {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 1rem; padding-top: 2rem;
+    }
+    .pine-logo-box {
+      width: 80px; height: 80px; border-radius: 16px;
+      background: linear-gradient(135deg, #00b894, #00cec9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 800; color: #fff;
+      text-align: center; line-height: 1.2;
+    }
+    .pine-arrows { font-size: 1.5rem; color: #6c5ce7; }
+    .pine-box.data-in { border-color: rgba(0,184,148,.2); }
+    .pine-box.data-in h4 { color: #00b894; }
+    .pine-box.data-out { border-color: rgba(108,92,231,.2); }
+    .pine-box.data-out h4 { color: #a29bfe; }
+
+    /* ===== FEATURES GRID ===== */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem; margin-top: 2rem;
+    }
+    .feature-card {
+      background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 12px; padding: 1.5rem; transition: transform .2s, border-color .2s;
+    }
+    .feature-card:hover { transform: translateY(-2px); border-color: rgba(108,92,231,.2); }
+    .feature-id {
+      font-family: 'JetBrains Mono', monospace; font-size: .7rem;
+      font-weight: 600; color: #6c5ce7; margin-bottom: .5rem;
+    }
+    .feature-card h4 { font-size: .95rem; font-weight: 700; color: #fff; margin-bottom: .4rem; }
+    .feature-card p { font-size: .82rem; color: #8888a0; }
+
+    /* ===== TECH STACK ===== */
+    .tech-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem; margin-top: 2rem;
+    }
+    .tech-card {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 12px; padding: 1.25rem; text-align: center;
+      transition: transform .2s;
+    }
+    .tech-card:hover { transform: translateY(-2px); }
+    .tech-card .tech-emoji { font-size: 1.8rem; margin-bottom: .5rem; }
+    .tech-card h4 { font-size: .9rem; font-weight: 700; color: #fff; margin-bottom: .25rem; }
+    .tech-card p { font-size: .75rem; color: #8888a0; }
+
+    /* ===== REFERENCES ===== */
+    .ref-list {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem; margin-top: 2rem;
+    }
+    .ref-item {
+      background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px; padding: 1.25rem;
+      display: flex; align-items: flex-start; gap: 1rem;
+    }
+    .ref-num {
+      width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;
+      background: rgba(108,92,231,.15); color: #a29bfe;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700;
+    }
+    .ref-item h5 { font-size: .88rem; font-weight: 600; color: #c0c0d0; }
+    .ref-item p { font-size: .78rem; color: #6a6a80; margin-top: .2rem; }
+
+    /* ===== FUTURE ROADMAP ===== */
+    .roadmap-timeline {
+      position: relative; padding-left: 2rem; margin-top: 2rem;
+    }
+    .roadmap-timeline::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 2px; background: linear-gradient(to bottom, #6c5ce7, transparent);
+    }
+    .roadmap-item {
+      position: relative; margin-bottom: 2rem; padding-left: 1.5rem;
+    }
+    .roadmap-item::before {
+      content: ''; position: absolute; left: -2.05rem; top: .5rem;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #6c5ce7; border: 2px solid #0a0a0f;
+    }
+    .roadmap-item h4 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: .3rem; }
+    .roadmap-item p { font-size: .85rem; color: #8888a0; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center; padding: 4rem 2rem 2rem;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .footer-quote {
+      font-size: 1.3rem; font-weight: 600; color: #a29bfe;
+      font-style: italic; max-width: 800px; margin: 0 auto 1.5rem;
+    }
+    .footer-sub { font-size: .85rem; color: #6a6a80; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,.85); backdrop-filter: blur(8px);
+      z-index: 1000; display: none; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .3s;
+    }
+    .modal-overlay.active { display: flex; opacity: 1; }
+    .modal-content {
+      position: relative; max-width: 90vw; max-height: 90vh;
+      background: #1a1a2e; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 20px; overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,.6);
+      animation: modalIn .3s ease;
+    }
+    @keyframes modalIn { from { transform: scale(.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .modal-header h3 { font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .modal-close {
+      width: 36px; height: 36px; border-radius: 8px; border: none;
+      background: rgba(255,255,255,.06); color: #a0a0b0; cursor: pointer;
+      font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+      transition: background .2s, color .2s;
+    }
+    .modal-close:hover { background: rgba(214,48,49,.2); color: #d63031; }
+    .modal-body { padding: 1.5rem; overflow: auto; max-height: calc(90vh - 80px); }
+    .modal-body img {
+      width: 100%; border-radius: 12px;
+      background: rgba(255,255,255,.02);
+    }
+    .modal-placeholder {
+      padding: 3rem; text-align: center; color: #6a6a80;
+      border: 2px dashed rgba(255,255,255,.08); border-radius: 12px;
+    }
+    .modal-placeholder p { margin-top: .5rem; font-size: .85rem; }
+    .modal-placeholder .placeholder-icon { font-size: 2.5rem; opacity: .5; }
+
+    /* ===== CALLOUT ===== */
+    .callout {
+      background: rgba(108,92,231,.08); border: 1px solid rgba(108,92,231,.2);
+      border-radius: 12px; padding: 1.5rem 2rem; margin: 2rem 0;
+      font-size: .95rem; color: #c0c0d0;
+    }
+    .callout strong { color: #a29bfe; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      nav { padding: 0 1rem; }
+      .nav-links { display: none; }
+      section { padding: 4rem 1rem; }
+      .story-grid { grid-template-columns: 1fr; }
+      .tiers { grid-template-columns: 1fr; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .pine-flow { grid-template-columns: 1fr; }
+      .pine-center { flex-direction: row; padding: 0; }
+      .arch-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== SCROLL ANIMATIONS ===== */
+    .fade-up {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ===== COUNTERFACTUAL BOX ===== */
+    .counter-box {
+      background: rgba(253,203,110,.06); border: 1px solid rgba(253,203,110,.15);
+      border-radius: 10px; padding: 1.25rem; margin-top: 1.5rem;
+      font-size: .88rem;
+    }
+    .counter-box .counter-label {
+      font-size: .7rem; font-weight: 700; color: #fdcb6e;
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: .5rem;
+    }
+    .counter-box code { color: #fdcb6e; font-size: .82rem; }
+
+    /* ===== API SECTION ===== */
+    .api-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: .75rem; margin-top: 2rem;
+    }
+    .api-item {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .7rem 1rem; border-radius: 8px;
+      background: rgba(255,255,255,.02);
+      font-size: .82rem; font-family: 'JetBrains Mono', monospace;
+    }
+    .api-method {
+      padding: .15rem .5rem; border-radius: 4px; font-size: .7rem;
+      font-weight: 700; flex-shrink: 0;
+    }
+    .api-method.get { background: rgba(0,184,148,.15); color: #00b894; }
+    .api-method.post { background: rgba(108,92,231,.15); color: #a29bfe; }
+    .api-path { color: #c0c0d0; }
+
+    /* ===== SCORING WALKTHROUGH ===== */
+    .score-walk {
+      background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem;
+    }
+    .score-walk h4 {
+      font-size: .95rem; font-weight: 700; margin-bottom: 1rem; color: #fff;
+    }
+    .score-calc {
+      font-family: 'JetBrains Mono', monospace; font-size: .78rem;
+      color: #a0a0b0; line-height: 2; word-break: break-all;
+    }
+    .score-result { 
+      margin-top: .75rem; font-weight: 700; font-size: 1rem; 
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Blobs -->
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+  <div class="bg-blob blob-3"></div>
+
+  <!-- Nav -->
+  <nav>
+    <div class="nav-brand">
+      <div class="logo-icon">🛡</div>
+      RefundPilot
+    </div>
+    <div class="nav-links">
+      <a href="#story">The Story</a>
+      <a href="#how">How It Works</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#signals">10 Signals</a>
+      <a href="#demo">Live Demo</a>
+      <a href="#features">Features</a>
+      <a href="#pine">Pine Labs</a>
+      <a href="#tech">Tech Stack</a>
+      <a class="nav-cta" href="#architecture">View Architecture →</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="top">
+    <div class="container">
+      <div class="hero-badge"><span class="dot"></span> Built for Pine Labs AI Hackathon (Playground)</div>
+      <h1>Smarter Refunds for Modern Commerce</h1>
+      <p class="hero-sub">
+        Meet Priya. Meet Rohit. One deserves her money back instantly.<br>
+        The other is gaming the system. Today, <em>both wait days to complete their refund.</em><br>
+        <strong style="color: #fff">RefundPilot knows the difference in 4 seconds.</strong>
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="num">4s</div>
+          <div class="label">Decision Time</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">10</div>
+          <div class="label">Weighted Signals</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">80%</div>
+          <div class="label">Auto-Decided</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">₹47K</div>
+          <div class="label">Fraud Savings / Quarter</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story -->
+  <section id="story">
+    <div class="container">
+      <div class="section-label">The Problem</div>
+      <h2 class="section-title">Two Customers. Same Broken System.</h2>
+      <p class="section-desc">Indian e-commerce treats every refund identically — a loyal customer waits just as long as a serial abuser. No intelligence. No autonomy. No differentiation.</p>
+
+      <div class="story-grid fade-up">
+        <div class="story-card priya">
+          <div class="card-emoji">👩</div>
+          <h3>Priya's Problem</h3>
+          <p>Ordered an ₹800 cotton kurta. It arrived with a tear on the sleeve. She raised a refund. <strong>Then she waited.</strong><br><br>
+            3 days for a reply. Support asked for photos via email. 5 more days. Finally approved. Then 7 more days for the money.<br><br>
+            <strong>Total: 15 days.</strong> On Day 3, she left a 1-star review. She never shopped there again.<br><br>
+            The merchant lost a lifetime customer over ₹800 — an amount they were <em>always going to approve anyway</em>.
+          </p>
+          <span class="highlight">Lost Customer. Lost Revenue.</span>
+        </div>
+        <div class="story-card rohit">
+          <div class="card-emoji">🕵️</div>
+          <h3>Rohit's Problem</h3>
+          <p>Returned 8 of his last 12 orders. Always "damaged in transit." He <strong>signed for every delivery.</strong> Never provided photos when asked.<br><br>
+            He cost one merchant ₹47,000 that year. Nobody noticed because every refund looked identical in a manual queue.<br><br>
+            And he's filing the same claims at <strong>2 OTHER Pine Labs merchants.</strong> Nobody connects the dots.
+          </p>
+          <span class="highlight">₹47K Fraud. Undetected.</span>
+        </div>
+      </div>
+
+      <div class="callout fade-up" style="margin-top: 3rem;">
+        <strong>The fundamental design flaw:</strong> the refund decision isn't a queue problem — it's an intelligence problem. What if an autonomous AI agent could look at the refund request, pull the customer's history, check for fraud patterns, and make a decision in 4 seconds?
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how">
+    <div class="container">
+      <div class="section-label">The Solution</div>
+      <h2 class="section-title">The 4-Second Autonomous Loop</h2>
+      <p class="section-desc">RefundPilot is an autonomous AI agent. It observes, collects evidence, scores risk with deterministic math, decides using a 3-tier system, and acts — all without human involvement.</p>
+
+      <div class="flow-steps fade-up">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <h4>OBSERVE</h4>
+          <p>Refund request arrives via API, chat, or WhatsApp (Hindi/English)</p>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <h4>COLLECT</h4>
+          <p>Agent pulls 10 signals: delivery status, history, RFM, cross-merchant intel</p>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <h4>SCORE</h4>
+          <p>Deterministic weighted formula computes risk (0–100). Same input = same output.</p>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <h4>DECIDE</h4>
+          <p>3-tier logic: math decides clear cases, AI judges gray areas</p>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <h4>ACT</h4>
+          <p>Pine Labs Refund API / Evidence request / Store credit / Case brief</p>
+        </div>
+      </div>
+
+      <div class="callout fade-up">
+        <strong>"Instant" means instant DECISION, not instant money.</strong> RefundPilot makes the decision in ~4 seconds. The actual money flows after return logistics (or immediately for returnless items under ₹500).
+      </div>
+
+      <!-- 3-Tier -->
+      <div style="margin-top: 4rem;">
+        <h3 class="section-title" style="font-size: 1.8rem;">3-Tier Decision Logic</h3>
+        <p class="section-desc">Clear cases don't need expensive LLM reasoning — math is faster, cheaper, deterministic. The gray zone is where human-like judgment matters.</p>
+
+        <div class="tiers fade-up">
+          <div class="tier-card approve">
+            <div class="tier-range">0–30</div>
+            <h4>Auto-Approve</h4>
+            <p>Math decides. No LLM needed. Instant, deterministic. LLM only generates explanation text. Return pickup auto-scheduled or returnless for items under ₹500.</p>
+            <div class="tier-tag">Math Decides ⚡</div>
+          </div>
+          <div class="tier-card investigate">
+            <div class="tier-range">31–70</div>
+            <h4>Investigate (ReAct Loop)</h4>
+            <p>AI decides. Agent enters a tool-use loop: request evidence, analyze photos, offer store credit, check cross-merchant data. Each step streamed live.</p>
+            <div class="tier-tag">AI Decides 🔍</div>
+          </div>
+          <div class="tier-card escalate">
+            <div class="tier-range">71–100</div>
+            <h4>Escalate</h4>
+            <p>Math decides. No debate. Human gets a pre-built case brief with top signals, counterfactual, and one-click action buttons. Zero repeated work.</p>
+            <div class="tier-tag">Math Decides 🚩</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture Diagrams -->
+  <section id="architecture" style="background: rgba(108,92,231,.02);">
+    <div class="container">
+      <div class="section-label">System Design</div>
+      <h2 class="section-title">Architecture Deep Dive</h2>
+      <p class="section-desc">Click any diagram to view the full architecture image. Seven interconnected layers power every refund decision.</p>
+
+      <div class="arch-grid fade-up">
+        <!-- 1. System Architecture -->
+        <div class="arch-card" onclick="openModal('system-architecture', 'System Architecture')">
+          <div class="arch-icon sys">🏗️</div>
+          <h4>System Architecture</h4>
+          <p>The full stack: React frontend → FastAPI backend → Agent Orchestrator → Pine Labs + LLM + SQLite. Three external systems, one unified pipeline.</p>
+          <div class="click-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click to expand
+          </div>
+        </div>
+
+        <!-- 2. 3-Tier Decision Flow -->
+        <div class="arch-card" onclick="openModal('3-tier-decision-flow', '3-Tier Decision Flow')">
+          <div class="arch-icon tier">⚖️</div>
+          <h4>3-Tier Decision Flow</h4>
+          <p>Score 0–30 → Math auto-approves. Score 31–70 → LLM enters ReAct loop. Score 71–100 → Math escalates. Circuit breakers override LLM when hard fraud signals fire.</p>
+          <div class="click-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click to expand
+          </div>
+        </div>
+
+        <!-- 3. 10-Signal Scoring Model -->
+        <div class="arch-card" onclick="openModal('10-signal-scoring-model', '10-Signal Scoring Model')">
+          <div class="arch-icon signal">📊</div>
+          <h4>10-Signal Scoring Model</h4>
+          <p>Deterministic weighted formula: RiskScore = Σ(weight × signal). S1 Customer Refund Rate (0.18) down to S10 Cross-Merchant Fraud (0.12). Math, not vibes.</p>
+          <div class="click-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click to expand
+          </div>
+        </div>
+
+        <!-- 4. ReAct Agentic Loop -->
+        <div class="arch-card" onclick="openModal('react-agentic-loop', 'ReAct Agentic Loop (Score 31–70)')">
+          <div class="arch-icon react">🧠</div>
+          <h4>ReAct Agentic Loop (Score 31–70)</h4>
+          <p>THINK → ACT → OBSERVE, up to 5 iterations. Tools: request_evidence, analyze_photo, offer_store_credit, check_cross_merchant, check_fraud_ring. LLM picks what to do next.</p>
+          <div class="click-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click to expand
+          </div>
+        </div>
+
+        <!-- 5. Return Verification Flow -->
+        <div class="arch-card" onclick="openModal('return-verification-flow', 'Return Verification Flow')">
+          <div class="arch-icon return">📦</div>
+          <h4>Return Verification Flow</h4>
+          <p>Pickup scheduled → In transit → Received at warehouse → QC pass → Refund released. QC fail → Auto-escalate with warehouse evidence. Returnless for items under ₹500.</p>
+          <div class="click-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click to expand
+          </div>
+        </div>
+
+        <!-- 6. Pine Labs Integration -->
+        <div class="arch-card" onclick="openModal('pine-labs-integration', 'Pine Labs Integration (Bidirectional)')">
+          <div class="arch-icon pine">🌲</div>
+          <h4>Pine Labs Integration (Bidirectional)</h4>
+          <p>DATA IN: Transaction history, cross-merchant intel feed scoring. DATA OUT: Refund API, Payment Links, Settlement polling execute actions. Load-bearing infrastructure.</p>
+          <div class="click-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click to expand
+          </div>
+        </div>
+
+        <!-- 7. Layer Dependency Map -->
+        <div class="arch-card" onclick="openModal('layer-dependency-map', 'Layer Dependency Map')">
+          <div class="arch-icon layer">🔗</div>
+          <h4>Layer Dependency Map</h4>
+          <p>How each layer depends on the others: Frontend → API → Orchestrator → Signal Collector + Decision Engine → Services → External APIs + DB. No circular dependencies.</p>
+          <div class="click-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click to expand
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 Signals -->
+  <section id="signals">
+    <div class="container">
+      <div class="section-label">Risk Intelligence</div>
+      <h2 class="section-title">The 10-Signal Scoring Model</h2>
+      <p class="section-desc">Inspired by Appriss Retail (370M+ returns/year) and Signifyd. Deterministic, auditable, transparent. Every signal's contribution is visible.</p>
+
+      <div class="callout fade-up">
+        <strong>RiskScore = Σ (weight<sub>i</sub> × signal_score<sub>i</sub>)</strong> &nbsp;&nbsp; where Σ weights = 1.0<br>
+        Same input → same output. Always. The LLM never touches the score — only explains it.
+      </div>
+
+      <table class="signals-table fade-up">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Signal</th>
+            <th>Weight</th>
+            <th></th>
+            <th>What It Catches</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="signal-badge">S1</span></td>
+            <td><strong style="color: #fff">Customer Refund Rate</strong></td>
+            <td style="color: #fdcb6e; font-weight: 700;">0.18</td>
+            <td><span class="weight-bar"><span class="weight-bar-fill" style="width: 100%"></span></span></td>
+            <td>Chronic returners — most predictive single signal in retail fraud</td>
+          </tr>
+          <tr>
+            <td><span class="signal-badge">S2</span></td>
+            <td><strong style="color: #fff">Delivery Contradiction</strong></td>
+            <td>0.14</td>
+            <td><span class="weight-bar"><span class="weight-bar-fill" style="width: 78%"></span></span></td>
+            <td>"Damaged" but signed for delivery — binary, high precision</td>
+          </tr>
+          <tr>
+            <td><span class="signal-badge">S3</span></td>
+            <td><strong style="color: #fff">Amount Risk</strong></td>
+            <td>0.07</td>
+            <td><span class="weight-bar"><span class="weight-bar-fill" style="width: 39%"></span></span></td>
+            <td>High-value claims get more scrutiny</td>
+          </tr>
+          <tr>
+            <td><span class="signal-badge">S4</span></td>
+            <td><strong style="color: #fff">Claim Pattern Repetition</strong></td>
+            <td>0.11</td>
+            <td><span class="weight-bar"><span class="weight-bar-fill" style="width: 61%"></span></span></td>
+            <td>Same excuse used 3+ times</td>
+          </tr>
+          <tr>
+            <td><span class="signal-badge">S5</span></td>
+            <td><strong style="color: #fff">Product Category Deviation</strong></td>
+            <td>0.07</td>
+            <td><span class="weight-bar"><span class="weight-bar-fill" style="width: 39%"></span></span></td>
+            <td>Returns above category norm</td>
+          </tr>
+          <tr>
+            <td><span class="signal-badge">S6</span></td>
+            <td><strong style="color: #fff">Sentiment Analysis</strong></td>
+            <td>0.06</td>
+            <td><span class="weight-bar"><span class="weight-bar-fill" style="width: 33%"></span></span></td>
+            <td>Formulaic/copy-paste messages → suspicious</td>
+          </tr>
+          <tr>
+            <td><span class="signal-badge">S7</span></td>
+            <td><strong style="color: #fff">RFM: Recency</strong></td>
+            <td>0.08</td>
+            <td><span class="weight-bar"><span class="weight-bar-fill" style="width: 44%"></span></span></td>
+            <td>Recent refund = higher suspicion</td>
+          </tr>
+          <tr>
+            <td><span class="signal-badge">S8</span></td>
+            <td><strong style="color: #fff">RFM: Frequency</strong></td>
+            <td>0.08</td>
+            <td><span class="weight-bar"><span class="weight-bar-fill" style="width: 44%"></span></span></td>
+            <td>Burst of refunds in 90 days</td>
+          </tr>
+          <tr>
+            <td><span class="signal-badge">S9</span></td>
+            <td><strong style="color: #fff">RFM: Monetary Ratio</strong></td>
+            <td>0.08</td>
+            <td><span class="weight-bar"><span class="weight-bar-fill" style="width: 44%"></span></span></td>
+            <td>Refunded ₹ exceeds purchased ₹</td>
+          </tr>
+          <tr>
+            <td><span class="signal-badge" style="background: linear-gradient(135deg, #00b894, #00cec9);">S10</span></td>
+            <td><strong style="color: #fff">Cross-Merchant Fraud</strong> <span style="font-size: .7rem; color: #00b894;">Pine Labs</span></td>
+            <td style="color: #00b894; font-weight: 700;">0.12</td>
+            <td><span class="weight-bar"><span class="weight-bar-fill" style="width: 67%; background: #00b894;"></span></span></td>
+            <td>Claims at OTHER Pine Labs merchants in 30 days — the X-factor</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout fade-up" style="margin-top: 2rem;">
+        <strong>S10 is only possible because Pine Labs processes payments across thousands of merchants.</strong> The agent queries: "Has this customer filed refund claims at OTHER Pine Labs merchants in the last 30 days?" This is Signifyd's billion-dollar differentiator — built natively on Pine Labs for India.
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo Scenarios -->
+  <section id="demo" style="background: rgba(108,92,231,.02);">
+    <div class="container">
+      <div class="section-label">See It In Action</div>
+      <h2 class="section-title">3 Characters. 3 Decisions. 4 Seconds Each.</h2>
+      <p class="section-desc">Every demo scenario runs the full agent pipeline end-to-end. Real scoring. Real reasoning. Real Pine Labs API calls.</p>
+
+      <div class="demo-grid fade-up">
+        <!-- Priya -->
+        <div class="demo-card priya-demo">
+          <div class="demo-avatar">P</div>
+          <h4>Priya Sharma</h4>
+          <div class="demo-type">👩 Loyal Customer → AUTO_APPROVE</div>
+          <div class="demo-detail"><strong>₹800</strong> cotton kurta — arrived with a tear</div>
+          <div class="demo-detail"><strong>23 orders</strong>, 1 previous refund (2% rate)</div>
+          <div class="demo-detail"><strong>0</strong> cross-merchant claims</div>
+          <div class="demo-signals">
+            <span class="demo-signal-tag green">S1: 2% ✅</span>
+            <span class="demo-signal-tag green">S2: Clean ✅</span>
+            <span class="demo-signal-tag green">S10: 0 claims ✅</span>
+            <span class="demo-signal-tag green">RFM: Clean ✅</span>
+          </div>
+          <div class="demo-score">
+            <div class="demo-score-label">
+              <span>Risk Score</span>
+              <span style="color: #00b894; font-weight: 700;">27/100</span>
+            </div>
+            <div class="demo-score-bar"><div class="demo-score-fill"></div></div>
+          </div>
+          <div class="counter-box">
+            <div class="counter-label">Counterfactual</div>
+            "Would escalate if refund rate exceeded 45% OR cross-merchant claims ≥ 2"
+          </div>
+        </div>
+
+        <!-- Vikram -->
+        <div class="demo-card vikram-demo">
+          <div class="demo-avatar">V</div>
+          <h4>Vikram Singh</h4>
+          <div class="demo-type">🔍 Suspect → INVESTIGATE (ReAct Loop)</div>
+          <div class="demo-detail"><strong>₹3,500</strong> earbuds — "not as described"</div>
+          <div class="demo-detail"><strong>8 orders</strong>, 4 refunds (50% rate)</div>
+          <div class="demo-detail"><strong>1</strong> cross-merchant claim at ElectroBazaar</div>
+          <div class="demo-signals">
+            <span class="demo-signal-tag red">S1: 50% 🚩</span>
+            <span class="demo-signal-tag yellow">S4: 4th claim ⚠</span>
+            <span class="demo-signal-tag yellow">S10: 1 claim ⚠</span>
+          </div>
+          <div class="demo-score">
+            <div class="demo-score-label">
+              <span>Risk Score</span>
+              <span style="color: #fdcb6e; font-weight: 700;">55/100</span>
+            </div>
+            <div class="demo-score-bar"><div class="demo-score-fill"></div></div>
+          </div>
+          <div class="score-walk">
+            <h4>🧠 ReAct Loop (3 Steps)</h4>
+            <div style="font-size: .82rem; color: #8888a0;">
+              <p><strong style="color: #fdcb6e;">THINK:</strong> "Score is 55. High refund rate, check evidence."</p>
+              <p><strong style="color: #a29bfe;">ACT:</strong> request_evidence → analyze_photo</p>
+              <p><strong style="color: #00cec9;">OBSERVE:</strong> "Stock photo detected!" → <strong style="color: #d63031;">ESCALATE</strong></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rohit -->
+        <div class="demo-card rohit-demo">
+          <div class="demo-avatar">R</div>
+          <h4>Rohit Mehta</h4>
+          <div class="demo-type">🚩 Serial Abuser → ESCALATE + Fraud Ring</div>
+          <div class="demo-detail"><strong>₹2,400</strong> shoes — 9th "damaged in transit" claim</div>
+          <div class="demo-detail"><strong>12 orders</strong>, 8 refunds (67% rate)</div>
+          <div class="demo-detail"><strong>2</strong> cross-merchant claims (FashionHub, ShoeZone)</div>
+          <div class="demo-signals">
+            <span class="demo-signal-tag red">S1: 67% 🚩🚩</span>
+            <span class="demo-signal-tag red">S2: Signed! 🚩</span>
+            <span class="demo-signal-tag red">S4: 9th claim 🚩🚩</span>
+            <span class="demo-signal-tag red">S8: 8/90d 🚩🚩</span>
+            <span class="demo-signal-tag red">S10: 2 merchants 🚩</span>
+          </div>
+          <div class="demo-score">
+            <div class="demo-score-label">
+              <span>Risk Score</span>
+              <span style="color: #d63031; font-weight: 700;">81/100</span>
+            </div>
+            <div class="demo-score-bar"><div class="demo-score-fill"></div></div>
+          </div>
+          <div style="margin-top: 1rem; padding: 1rem; background: rgba(214,48,49,.08); border: 1px solid rgba(214,48,49,.15); border-radius: 8px;">
+            <div style="font-size: .75rem; font-weight: 700; color: #d63031; text-transform: uppercase; letter-spacing: 1px; margin-bottom: .4rem;">🔥 Fraud Ring Detected</div>
+            <div style="font-size: .82rem; color: #c0c0d0;">
+              2 other accounts at same address: <strong>Deepak Kumar (CUST-008)</strong> & <strong>Sunita Devi (CUST-009)</strong><br>
+              <span style="color: #8888a0;">+ Circuit breaker fired: S2=100 → forced escalate</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pine Labs Integration -->
+  <section id="pine">
+    <div class="container">
+      <div class="section-label">Core Infrastructure</div>
+      <h2 class="section-title">Pine Labs: Load-Bearing in Both Directions</h2>
+      <p class="section-desc">Pine Labs isn't a payment gateway bolted on — it's the data backbone. The system literally cannot work without it.</p>
+
+      <div class="pine-flow fade-up">
+        <div class="pine-box data-in">
+          <h4>📥 Data IN (Feeds Scoring)</h4>
+          <ul>
+            <li><strong>S10 Cross-Merchant:</strong> Pine Labs network reveals claims at other merchants in 30 days</li>
+            <li><strong>S9 Monetary Ratio:</strong> Transaction history provides total purchase amounts</li>
+            <li><strong>Fraud Ring:</strong> Shared payment methods across Pine Labs merchants</li>
+            <li><strong>S3 Amount:</strong> Original transaction amount from Pine Labs, not just order DB</li>
+          </ul>
+        </div>
+
+        <div class="pine-center">
+          <div class="pine-arrows">←</div>
+          <div class="pine-logo-box">PINE<br>LABS</div>
+          <div class="pine-arrows">→</div>
+        </div>
+
+        <div class="pine-box data-out">
+          <h4>📤 Data OUT (Executes Actions)</h4>
+          <ul>
+            <li><strong>Refund API:</strong> <code>POST /refunds/{order_id}</code> — processes refund to original payment method</li>
+            <li><strong>Payment Links:</strong> <code>POST /paymentlink</code> — real clickable links for store credit</li>
+            <li><strong>Orders:</strong> <code>POST /orders</code> — creates tracking orders for every decision</li>
+            <li><strong>Settlements:</strong> <code>GET /settlements</code> — reconciliation tracking (F24)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout fade-up">
+        <strong>The chargeback angle:</strong> Every fraudulent refund RefundPilot catches is a chargeback Pine Labs doesn't have to process. Dispute fees (₹1,500–₹3,000 per case) + merchant account health + Pine Labs' own processing costs. This is Pine Labs' problem too, not just the merchant's.
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" style="background: rgba(108,92,231,.02);">
+    <div class="container">
+      <div class="section-label">Capabilities</div>
+      <h2 class="section-title">27 Features. Zero Fluff.</h2>
+      <p class="section-desc">Every feature solves a real problem. Edge cases aren't afterthoughts — they're first-class citizens.</p>
+
+      <div class="features-grid fade-up">
+        <div class="feature-card">
+          <div class="feature-id">F1</div>
+          <h4>10-Signal Risk Scoring</h4>
+          <p>Deterministic weighted formula. Merchant-configurable presets (Fashion / Electronics / Custom).</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F2</div>
+          <h4>Counterfactual Explanations</h4>
+          <p>"What would need to change?" — Pure math, causal understanding. Protects honest borderline customers.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F3</div>
+          <h4>Dynamic Risk Meter</h4>
+          <p>Animated 0–100 score builds signal-by-signal. S10 jump moment is the demo highlight.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F4</div>
+          <h4>RFM Abuse Profiling</h4>
+          <p>Recency-Frequency-Monetary behavioral analysis + wardrobing detection for fashion.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F5</div>
+          <h4>Autonomous Evidence Collection</h4>
+          <p>Agent decides when to request photos. 48h timeout → auto-escalate (not auto-deny).</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F5.5</div>
+          <h4>ReAct Agentic Loop</h4>
+          <p>THINK → ACT → OBSERVE. Max 5 iterations. LLM picks next tool autonomously.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F6</div>
+          <h4>Smart Store Credit</h4>
+          <p>₹850 store credit vs ₹800 cash refund. Keeps revenue in merchant ecosystem via Pine Labs Payment Links.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F8</div>
+          <h4>Vision Analysis (Enhanced)</h4>
+          <p>3-layer: EXIF metadata → Barcode/tag verification → Damage & authenticity analysis.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F19</div>
+          <h4>Product Defect Dampener</h4>
+          <p>Bad SKU batch? Halves S1 weight automatically. Prevents false positives on genuine customers.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F20</div>
+          <h4>Fraud Ring Detection</h4>
+          <p>Shared address/payment SQL graph. 5 accounts × 1 refund each = invisible individually, flagged collectively.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F21</div>
+          <h4>Circuit Breakers</h4>
+          <p>S2=100 or S10=100 → force escalate. Math overrides LLM. JSON validation, tool whitelist, iteration cap.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F22</div>
+          <h4>Concurrent Locking</h4>
+          <p>Per-customer asyncio.Lock. 3 simultaneous refunds won't all auto-approve. 5 lines, zero architecture change.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F23</div>
+          <h4>Seasonal Baselines</h4>
+          <p>Post-Diwali/BBD: approval threshold shifts 30→38. Genuine customers sail through. Fraud signals still fire.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F24</div>
+          <h4>Smart Reconciliation</h4>
+          <p>Settlement polling via Pine Labs. Approved → Settled ✅ or Pending/Failed 🚩. Auto-dispute workflows.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F25</div>
+          <h4>Conversational Commerce</h4>
+          <p>"My kurta arrived torn" → agent extracts order_id, reason, sentiment. Hindi/English. No forms needed.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F26</div>
+          <h4>Fraud Similarity Score</h4>
+          <p>Cosine distance to known fraudster centroid. "87% similar to known fraud profiles." ML on top of rules.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F27</div>
+          <h4>Graph Analytics</h4>
+          <p>networkx graph: Customer ↔ Address. Connected components = fraud rings. Degree centrality = hub addresses.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F9–F18</div>
+          <h4>+ 10 More Features</h4>
+          <p>Sentiment prioritization, multi-language, live dashboard, NL merchant queries, fraud alerts, cohort clustering, audit trail, case briefs, and more.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section id="tech">
+    <div class="container">
+      <div class="section-label">Under the Hood</div>
+      <h2 class="section-title">Tech Stack</h2>
+      <p class="section-desc">Production-grade decisions. Hackathon-speed development. Every tool chosen for a reason.</p>
+
+      <div class="tech-grid fade-up">
+        <div class="tech-card">
+          <div class="tech-emoji">⚡</div>
+          <h4>Python + FastAPI</h4>
+          <p>Async, WebSocket, clean agent orchestration</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-emoji">🧮</div>
+          <h4>Weighted Rules + RFM</h4>
+          <p>Deterministic, auditable, industry-standard scoring</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-emoji">🧠</div>
+          <h4>ZhipuAI GLM-5</h4>
+          <p>Explanations + ReAct reasoning for gray zone</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-emoji">👁️</div>
+          <h4>Groq Llama-4 Scout</h4>
+          <p>Stock photo detection, damage analysis (fast inference)</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-emoji">💳</div>
+          <h4>Pine Labs Plural API</h4>
+          <p>Real orders, refunds, payment links, settlements</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-emoji">🗄️</div>
+          <h4>SQLite (WAL)</h4>
+          <p>Zero-setup, WAL mode for concurrent reads</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-emoji">⚛️</div>
+          <h4>React 18 + Vite</h4>
+          <p>Dark UI, responsive, real-time updates</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-emoji">🎨</div>
+          <h4>Tailwind CSS</h4>
+          <p>Rapid styling, consistent design system</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-emoji">📊</div>
+          <h4>Recharts</h4>
+          <p>Dashboard visualizations, fraud graphs</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-emoji">🔗</div>
+          <h4>networkx</h4>
+          <p>Graph analytics for fraud ring detection</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-emoji">🔢</div>
+          <h4>NumPy</h4>
+          <p>Cosine similarity for fraud profiling</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-emoji">📡</div>
+          <h4>WebSocket</h4>
+          <p>Live score updates, streaming ReAct chain</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- API Endpoints -->
+  <section id="api" style="background: rgba(108,92,231,.02);">
+    <div class="container">
+      <div class="section-label">Developer Surface</div>
+      <h2 class="section-title">22 API Endpoints</h2>
+      <p class="section-desc">Full REST API + WebSocket. Every agent capability exposed.</p>
+
+      <div class="api-grid fade-up">
+        <div class="api-item"><span class="api-method post">POST</span><span class="api-path">/api/refund</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/refund/{id}</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/refund</span></div>
+        <div class="api-item"><span class="api-method post">POST</span><span class="api-path">/api/demo/run/{scenario}</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/demo/scenarios</span></div>
+        <div class="api-item"><span class="api-method post">POST</span><span class="api-path">/api/query</span></div>
+        <div class="api-item"><span class="api-method post">POST</span><span class="api-path">/api/chat/refund</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/stats</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/refunds</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/customers</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/customers/{id}</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/alerts</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/audit-log</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/reconciliation</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/fraud-graph</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/fraud-similarity/{id}</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/cohorts/products</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/cohorts/cities</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/dashboard/cohorts/reasons</span></div>
+        <div class="api-item"><span class="api-method post">POST</span><span class="api-path">/api/webhook/evidence/{id}</span></div>
+        <div class="api-item"><span class="api-method post">POST</span><span class="api-path">/api/webhook/fraud-ring/{id}</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/health</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- References -->
+  <section id="references">
+    <div class="container">
+      <div class="section-label">Research Foundation</div>
+      <h2 class="section-title">Standing on the Shoulders of Giants</h2>
+      <p class="section-desc">RefundPilot's approach is grounded in industry practice and academic research — not invented in a vacuum.</p>
+
+      <div class="ref-list fade-up">
+        <div class="ref-item">
+          <div class="ref-num">1</div>
+          <div>
+            <h5>Appriss Retail / The Retail Equation</h5>
+            <p>370M+ returns/year processed for Home Depot, Best Buy, Victoria's Secret. Weighted behavioral scoring is their core methodology.</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-num">2</div>
+          <div>
+            <h5>Signifyd ($1.7B valuation)</h5>
+            <p>Commerce protection via merchant network intelligence across 10,000+ merchants. Same cross-merchant concept as our S10.</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-num">3</div>
+          <div>
+            <h5>Riskified (RSKD, publicly traded)</h5>
+            <p>ML-based e-commerce fraud prevention using behavioral signals + network effects.</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-num">4</div>
+          <div>
+            <h5>RFM Analysis — Bult & Wansbeek (1995)</h5>
+            <p>"Optimal Selection for Direct Mail." Marketing Science, 14(4). Foundation of Recency-Frequency-Monetary analysis in retail.</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-num">5</div>
+          <div>
+            <h5>RFM Customer Segmentation — Fader et al. (2005)</h5>
+            <p>"Counting Your Customers the Easy Way." Marketing Science, 24(2). Extended RFM to probabilistic customer lifetime models.</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-num">6</div>
+          <div>
+            <h5>Pine Labs Plural API</h5>
+            <p>Payment gateway APIs for orders, refunds, payment links, settlements. Real UAT integration in our demo.</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-num">7</div>
+          <div>
+            <h5>ZhipuAI GLM-5</h5>
+            <p>LLM for reasoning and explanation generation in the ReAct agentic loop.</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-num">8</div>
+          <div>
+            <h5>Groq Llama 4 Scout</h5>
+            <p>Fast inference for vision analysis — stock photo detection, damage assessment.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap -->
+  <section id="roadmap" style="background: rgba(108,92,231,.02);">
+    <div class="container">
+      <div class="section-label">What's Next</div>
+      <h2 class="section-title">Future Roadmap</h2>
+      <p class="section-desc">RefundPilot today is the foundation. Here's where it goes.</p>
+
+      <div class="roadmap-timeline fade-up">
+        <div class="roadmap-item">
+          <h4>Isolation Forest Anomaly Detection</h4>
+          <p>ML-based unsupervised anomaly detector. Catches novel fraud patterns no predefined rule can express.</p>
+        </div>
+        <div class="roadmap-item">
+          <h4>Adaptive Weight Tuning</h4>
+          <p>Auto-calibrate signal weights per merchant using their refund outcomes. Weights evolve from generic to merchant-specific.</p>
+        </div>
+        <div class="roadmap-item">
+          <h4>Cross-Merchant Fraud Network</h4>
+          <p>Federated learning across Pine Labs merchants. Abuser flagged on Store A → warning on Store B. Without sharing PII.</p>
+        </div>
+        <div class="roadmap-item">
+          <h4>Predictive Refund Prevention</h4>
+          <p>Predict which orders will result in refunds before they ship. Intervene with better packaging or proactive communication.</p>
+        </div>
+        <div class="roadmap-item">
+          <h4>Auto-Chargeback Defense</h4>
+          <p>Customer files chargeback → agent compiles delivery proof + communication history → submits defense package autonomously.</p>
+        </div>
+        <div class="roadmap-item">
+          <h4>Voice Agent + Shopify Plugin</h4>
+          <p>Merchant calls and asks "How many refunds this week?" Voice agent answers. One-click install for Shopify/WooCommerce.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-quote">"Decision in 4 seconds. Not 15 days.<br>Math decides clear cases. AI decides gray areas.<br>Every fraud caught is a chargeback Pine Labs doesn't process."</div>
+      <p class="footer-sub">Built for the <strong style="color: #a29bfe;">Pine Labs AI Hackathon (Playground)</strong> — Agentic / Autonomous Commerce & Intelligent Payments</p>
+      <p class="footer-sub" style="margin-top: .5rem; color: #444;">RefundPilot — The Instant Justice Machine</p>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="imageModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Architecture Diagram</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Scroll animations =====
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ===== Image Modal =====
+    const archImages = {
+      'system-architecture': 'images/system architecture.png',
+      '3-tier-decision-flow': 'images/3-Tier Decision Flow.png',
+      '10-signal-scoring-model': 'images/10-Signal Scoring Model.png',
+      'react-agentic-loop': 'images/ReAct Agentic Loop (Score 31–70).png',
+      'return-verification-flow': 'images/Return Verification Flow.png',
+      'pine-labs-integration': 'images/Pine Labs Integration (Bidirectional).png',
+      'layer-dependency-map': 'images/Layer Dependency Map.png',
+    };
+
+    function openModal(key, title) {
+      const modal = document.getElementById('imageModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+
+      modalTitle.textContent = title;
+
+      const imgPath = archImages[key];
+      const img = new Image();
+      img.src = imgPath;
+      img.alt = title;
+      img.style.borderRadius = '12px';
+
+      img.onload = function () {
+        modalBody.innerHTML = '';
+        modalBody.appendChild(img);
+      };
+
+      img.onerror = function () {
+        modalBody.innerHTML = `
+          <div class="modal-placeholder">
+            <div class="placeholder-icon">🖼️</div>
+            <p><strong>Image not found yet</strong></p>
+            <p>Drop your image at:<br><code style="color: #a29bfe; font-size: .85rem;">website/images/${key}.png</code></p>
+          </div>
+        `;
+      };
+
+      // Show loading state first
+      modalBody.innerHTML = '<div style="text-align: center; padding: 3rem; color: #6a6a80;">Loading...</div>';
+
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal on overlay click
+    document.getElementById('imageModal').addEventListener('click', function (e) {
+      if (e.target === this) closeModal();
+    });
+
+    // Close modal on Escape
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // ===== Smooth scroll for nav =====
+    document.querySelectorAll('nav a[href^="#"]').forEach(a => {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // ===== Nav background on scroll =====
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('nav');
+      if (window.scrollY > 50) {
+        nav.style.background = 'rgba(10,10,15,.95)';
+      } else {
+        nav.style.background = 'rgba(10,10,15,.85)';
+      }
+    });
+  </script>
+</body>
+</html>

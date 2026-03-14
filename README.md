@@ -16,7 +16,7 @@ The merchant lost a lifetime customer over ₹800 —> an amount they were alway
 
 Meanwhile, Rohit returned 8 of his last 12 orders. Always "damaged in transit." He signed for every delivery. He never provided photos when asked. He cost one merchant ₹47,000 that year. Nobody noticed because every refund looked identical in a manual queue.
 
-**Same system. Same 15-day wait. One honest customer. One serial abuser. Both treated identically.**
+**Same system. Same n-day wait. One honest customer. One serial abuser. Both treated identically.**
 
 That's when it hit us: **the refund decision isn't a queue problem , it's an intelligence problem.** What if an autonomous AI agent could look at the refund request, pull the customer's history, check for fraud patterns, and make a decision in 4 seconds?
 
