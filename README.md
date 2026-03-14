@@ -384,6 +384,8 @@ node patch-rollup.cjs   # Required for ARM64 Windows
 npx vite --port 5173
 ```
 
+### One click run via Start scripts (0 hassle)
+
 Open **http://localhost:5173** → Go to **Live Demo** → Click **Run All 3 Scenarios**.
 
 ---
