@@ -22,8 +22,11 @@ BEDROCK_VISION_MODEL_ID = os.getenv("BEDROCK_VISION_MODEL_ID", "anthropic.claude
 
 # Pine Labs Configuration
 PINELABS_API_BASE = os.getenv("PINELABS_API_BASE", "https://api.pinelabs.com/v1")
-PINELABS_API_KEY = os.getenv("PINELABS_API_KEY", "")
 PINELABS_MERCHANT_ID = os.getenv("PINELABS_MERCHANT_ID", "")
+PINELABS_CLIENT_ID = os.getenv("PINELABS_CLIENT_ID", "")
+PINELABS_CLIENT_SECRET = os.getenv("PINELABS_CLIENT_SECRET", "")
+# Legacy key field (kept for backward compat)
+PINELABS_API_KEY = os.getenv("PINELABS_API_KEY", "")
 
 # App Configuration
 DATABASE_PATH = os.getenv("DATABASE_PATH", "refundpilot.db")

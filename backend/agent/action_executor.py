@@ -1,14 +1,15 @@
-"""Action Executor — executes the agent's decision via Pine Labs APIs and other actions.
+"""Action Executor — executes the agent's decision via Pine Labs APIs.
 
-Actions by decision tier:
-- AUTO_APPROVE → Pine Labs Refund API (returnless if < ₹500, else schedule return pickup)
-- INVESTIGATE → Request evidence / Offer store credit / Check fraud ring
-- ESCALATE → Build case brief for human review
+End-to-end Pine Labs integration:
+- AUTO_APPROVE → Create Pine Labs Order → Attempt Refund → Payment Link as receipt
+- INVESTIGATE → Request evidence / Offer store credit (real Pine Labs Payment Link)
+- ESCALATE → Create Pine Labs Order (for tracking) → Build case brief
 """
 
-from services.pinelabs_service import initiate_refund, create_payment_link
+from services.pinelabs_service import initiate_refund, create_payment_link, create_order
 from agent.negotiator import should_offer_store_credit
 from config import RETURNLESS_REFUND_THRESHOLD
+import uuid
 
 
 async def execute_action(decision_result: dict, refund_id: str, order_id: str, amount: float) -> dict:
@@ -28,23 +29,33 @@ async def execute_action(decision_result: dict, refund_id: str, order_id: str, a
 
 
 async def _execute_approve(refund_id: str, order_id: str, amount: float, action: str) -> dict:
-    """AUTO_APPROVE: Fire Pine Labs refund (returnless or post-return)."""
+    """AUTO_APPROVE: Create Pine Labs order → attempt refund → show result."""
 
     is_returnless = amount < RETURNLESS_REFUND_THRESHOLD
 
-    # Call Pine Labs Refund API
-    refund_result = await initiate_refund(order_id, amount, "auto_approved")
+    # Step 1: Create a Pine Labs order for this refund (real API call)
+    pl_order = await create_order(
+        amount=amount,
+        customer_name="RefundPilot Customer",
+        customer_email="refund@refundpilot.demo",
+        reference=f"rp-{refund_id}",
+    )
+
+    # Step 2: Attempt refund against the Pine Labs order
+    pl_order_id = pl_order.get("order_id", order_id)
+    refund_result = await initiate_refund(pl_order_id, amount, "auto_approved_by_refundpilot")
 
     return {
         "type": "refund_returnless" if is_returnless else "refund_with_return",
         "status": "refund_initiated",
         "is_returnless": is_returnless,
+        "pine_labs_order": pl_order,
         "pine_labs": refund_result,
         "amount": amount,
         "message": (
-            f"Refund of ₹{amount} initiated (returnless — no return pickup needed)"
+            f"Refund of ₹{amount} initiated (returnless — no return pickup needed). Pine Labs order: {pl_order_id}"
             if is_returnless
-            else f"Refund of ₹{amount} approved. Return pickup will be scheduled. Refund releases after product verified."
+            else f"Refund of ₹{amount} approved. Pine Labs order created: {pl_order_id}. Return pickup will be scheduled."
         ),
     }
 
@@ -52,23 +63,24 @@ async def _execute_approve(refund_id: str, order_id: str, amount: float, action:
 async def _execute_investigate(
     refund_id: str, order_id: str, amount: float, action: str, decision_result: dict
 ) -> dict:
-    """INVESTIGATE: Execute the recommended investigate action."""
+    """INVESTIGATE: Execute the recommended investigate action with Pine Labs integration."""
 
     if action == "request_evidence":
         return {
             "type": "request_evidence",
             "status": "evidence_requested",
             "message": f"Please upload a photo of the damaged item with barcode/tag visible to process your refund (REF: {refund_id}).",
-            "whatsapp_template": f"Hi, regarding your refund request {refund_id}: Please upload a clear photo of the item showing the damage and the product barcode/tag. This helps us process your request faster.",
+            "whatsapp_template": f"Hi, regarding your refund request {refund_id}: Please upload a clear photo showing the damage and the product barcode/tag.",
         }
 
     elif action == "offer_store_credit":
         credit_result = await should_offer_store_credit(amount, decision_result)
         if credit_result["offer_credit"]:
+            # Create REAL Pine Labs Payment Link for store credit
             link_result = await create_payment_link(
                 credit_result["credit_amount"],
-                "customer@email.com",
-                f"Store credit for refund {refund_id}",
+                "customer@refundpilot.demo",
+                f"RefundPilot store credit — ₹{credit_result['credit_amount']} (₹{amount} + ₹{credit_result['bonus']} bonus) for {refund_id}",
             )
             return {
                 "type": "store_credit_offer",
@@ -109,7 +121,15 @@ async def _execute_investigate(
 
 
 async def _execute_escalate(refund_id: str, order_id: str, amount: float, decision_result: dict) -> dict:
-    """ESCALATE: Build a pre-investigated case brief for human review."""
+    """ESCALATE: Create Pine Labs order for tracking + build case brief."""
+
+    # Create Pine Labs order so the escalated case has a PL reference
+    pl_order = await create_order(
+        amount=amount,
+        customer_name="Escalated Case",
+        customer_email="escalated@refundpilot.demo",
+        reference=f"rp-esc-{refund_id}",
+    )
 
     top_signals = sorted(
         decision_result["reasoning_chain"],
@@ -120,6 +140,7 @@ async def _execute_escalate(refund_id: str, order_id: str, amount: float, decisi
     case_brief = {
         "refund_id": refund_id,
         "order_id": order_id,
+        "pine_labs_order_id": pl_order.get("order_id", ""),
         "amount": amount,
         "risk_score": decision_result["risk_score"],
         "top_risk_signals": [
@@ -134,6 +155,7 @@ async def _execute_escalate(refund_id: str, order_id: str, amount: float, decisi
     return {
         "type": "escalate_to_human",
         "status": "escalated",
+        "pine_labs_order": pl_order,
         "case_brief": case_brief,
-        "message": f"Case escalated for human review. Pre-built brief with {len(top_signals)} risk signals attached.",
+        "message": f"Case escalated. Pine Labs order {pl_order.get('order_id', '')} created for tracking. Pre-built brief with {len(top_signals)} risk signals.",
     }
