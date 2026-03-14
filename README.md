@@ -12,13 +12,13 @@ My friend Priya ordered a cotton kurta online. It arrived with a tear on the sle
 
 **Total: 15 days. On Day 3, she left a 1-star review. She never shopped there again.**
 
-The merchant lost a lifetime customer over ₹800 — an amount they were always going to approve anyway.
+The merchant lost a lifetime customer over ₹800 —> an amount they were always going to approve anyway.
 
 Meanwhile, Rohit returned 8 of his last 12 orders. Always "damaged in transit." He signed for every delivery. He never provided photos when asked. He cost one merchant ₹47,000 that year. Nobody noticed because every refund looked identical in a manual queue.
 
 **Same system. Same 15-day wait. One honest customer. One serial abuser. Both treated identically.**
 
-That's when it hit us: **the refund decision isn't a queue problem — it's an intelligence problem.** What if an autonomous AI agent could look at the refund request, pull the customer's history, check for fraud patterns, and make a decision in 4 seconds?
+That's when it hit us: **the refund decision isn't a queue problem , it's an intelligence problem.** What if an autonomous AI agent could look at the refund request, pull the customer's history, check for fraud patterns, and make a decision in 4 seconds?
 
 That's RefundPilot.
 
@@ -213,7 +213,7 @@ Instead, we use a **hybrid approach inspired by industry leaders** (Appriss Reta
 RiskScore = Σ (weight_i × signal_score_i)    where Σ weights = 1.0
 ```
 
-The score is **pure math** — same input always gives the same output. The LLM only generates the **explanation text**, never the score.
+The score is **pure math**  same input always gives the same output. The LLM only generates the **explanation text**, never the score.
 
 ### The 10 Signals
 
