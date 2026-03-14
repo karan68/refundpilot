@@ -234,12 +234,9 @@ The score is **pure math**  same input always gives the same output. The LLM onl
 
 **Yes — intentionally.** The current weights are based on:
 
-1. **Industry research** — [Appriss Retail (The Retail Equation)](https://apprissretail.com/), which processes 370M+ returns/year for retailers like Home Depot, Best Buy, and Victoria's Secret, uses [weighted behavioral scoring](https://apprissretail.com/solution/verify/) as their core methodology. [Signifyd](https://www.signifyd.com/) and [Riskified](https://www.riskified.com/) use similar network-based fraud scoring for e-commerce.
-2. **RFM analysis** — Recency-Frequency-Monetary is a foundational retail analytics technique. Key references:
-   - Bult, J.R. & Wansbeek, T. (1995). [Optimal selection for direct mail](https://doi.org/10.1287/mksc.14.4.378). *Marketing Science*, 14(4), 378-394.
-   - Fader, P.S., Hardie, B.G.S. & Lee, K.L. (2005). ["Counting Your Customers" the Easy Way](https://doi.org/10.1287/mksc.1040.0098). *Marketing Science*, 24(2), 275-284.
-   - [RFM Segmentation in Retail Analytics](https://en.wikipedia.org/wiki/RFM_(market_research)) — Wikipedia overview.
-3. **Domain expertise** — S1 (customer refund rate) gets the highest weight because [longitudinal behavior is the single most predictive signal](https://www.retaildive.com/news/return-fraud-costs-retailers-101-billion/639752/) for refund abuse. The NRF estimates return fraud costs US retailers [$101 billion annually](https://nrf.com/research/2023-consumer-returns-retail-industry).
+1. **Industry research** — Appriss Retail, which processes 370M+ returns/year for retailers like Home Depot, Best Buy, and Victoria's Secret, uses weighted behavioral scoring as their core methodology.
+2. **RFM analysis** — Recency-Frequency-Monetary is a foundational retail analytics technique (Bult & Wansbeek 1995, Fader et al. 2005).
+3. **Domain expertise** — S1 (customer refund rate) gets the highest weight because longitudinal behavior is the single most predictive signal for refund abuse.
 
 **But we acknowledge these are starting weights.** In production, they evolve:
 
@@ -248,6 +245,17 @@ The score is **pure math**  same input always gives the same output. The LLM onl
 - **Future: Adaptive Weight Tuning** (see roadmap) — ML models auto-calibrate weights per merchant using their historical refund outcomes.
 
 The math is transparent. Every signal's contribution is visible on screen. The merchant sees exactly WHY the agent decided what it did.
+
+### References
+
+1. **Appriss Retail / The Retail Equation** — Processes 370M+ returns/year for Home Depot, Best Buy, Victoria's Secret using weighted behavioral return scoring. [apprissretail.com](https://apprissretail.com/)
+2. **Signifyd** — Commerce protection platform using merchant network intelligence for fraud scoring across 10,000+ merchants. [$1.7B valuation](https://www.signifyd.com/). Same cross-merchant concept as our S10.
+3. **Riskified** — ML-based e-commerce fraud prevention, publicly traded (RSKD). Uses behavioral signals + network effects. [riskified.com](https://www.riskified.com/)
+4. **RFM Analysis** — Bult, J.R. & Wansbeek, T. (1995). "Optimal Selection for Direct Mail." Marketing Science, 14(4). [doi:10.1287/mksc.14.4.378](https://doi.org/10.1287/mksc.14.4.378)
+5. **RFM in Customer Segmentation** — Fader, P.S., Hardie, B.G.S., & Lee, K.L. (2005). "Counting Your Customers the Easy Way." Marketing Science, 24(2). [doi:10.1287/mksc.1040.0098](https://doi.org/10.1287/mksc.1040.0098)
+6. **Pine Labs Plural API** — Payment gateway APIs for orders, refunds, payment links, settlements. [developer.pinelabs.com](https://developer.pluralbypinetree.com/)
+7. **ZhipuAI GLM-5** — Large language model for reasoning and explanation generation. [open.bigmodel.cn](https://open.bigmodel.cn/)
+8. **Groq Llama 4 Scout** — Fast inference for vision analysis (stock photo detection, damage assessment). [groq.com](https://groq.com/)
 
 ### 3-Tier Decision Logic
 
