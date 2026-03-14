@@ -384,6 +384,31 @@
     .pine-box.data-out { border-color: rgba(108,92,231,.2); }
     .pine-box.data-out h4 { color: #a29bfe; }
 
+    /* ===== REAL-WORLD IMPACT ===== */
+    .impact-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem; margin-top: 2rem;
+    }
+    .impact-card {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px; padding: 1.6rem; transition: transform .25s, border-color .25s;
+    }
+    .impact-card:hover { transform: translateY(-3px); border-color: rgba(108,92,231,.28); }
+    .impact-kicker {
+      font-size: .72rem; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase;
+      color: #6c5ce7; margin-bottom: .65rem;
+    }
+    .impact-metric {
+      font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 800;
+      color: #fff; margin-bottom: .6rem;
+    }
+    .impact-card h4 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: .55rem; }
+    .impact-card p { font-size: .86rem; color: #9090a8; }
+    .impact-source {
+      margin-top: 1rem; font-size: .75rem; color: #6f6f86;
+    }
+    .impact-source a { color: #a29bfe; }
+
     /* ===== FEATURES GRID ===== */
     .features-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -602,6 +627,7 @@
       <a href="#architecture">Architecture</a>
       <a href="#signals">10 Signals</a>
       <a href="#demo">Live Demo</a>
+      <a href="#impact">Impact</a>
       <a href="#features">Features</a>
       <a href="#pine">Pine Labs</a>
       <a href="#tech">Tech Stack</a>
@@ -1072,7 +1098,54 @@
       </div>
 
       <div class="callout fade-up">
-        <strong>The chargeback angle:</strong> Every fraudulent refund RefundPilot catches is a chargeback Pine Labs doesn't have to process. Dispute fees (₹1,500–₹3,000 per case) + merchant account health + Pine Labs' own processing costs. This is Pine Labs' problem too, not just the merchant's.
+        <strong>The chargeback angle:</strong> Every fraudulent refund RefundPilot catches is one less dispute, one less manual review, and one less merchant-escalation cycle for the payments stack to absorb. This is Pine Labs' problem too, not just the merchant's.
+      </div>
+    </div>
+  </section>
+
+  <!-- Real-World Impact -->
+  <section id="impact" style="background: rgba(0,206,201,.03);">
+    <div class="container">
+      <div class="section-label">Business Impact</div>
+      <h2 class="section-title">Real-World Impact, Not Just a Demo</h2>
+      <p class="section-desc">Merchants lose money when every refund waits for a human, and they lose customers when a sloppy bot handles every case the same way. RefundPilot is built for the middle path: automate clear cases, preserve human escalation for sensitive ones, and connect the decision directly to payment rails.</p>
+
+      <div class="impact-grid fade-up">
+        <div class="impact-card">
+          <div class="impact-kicker">Klarna, 2024</div>
+          <div class="impact-metric">$40M</div>
+          <h4>Automation saves real operating cost</h4>
+          <p>Klarna said its AI assistant handled 2.3 million conversations in one month, did the equivalent work of 700 full-time agents, cut resolution time to under 2 minutes from 11, and was estimated to improve profit by $40 million in 2024. That is the case for automating low-risk refund work.</p>
+          <div class="impact-source">Source: <a href="https://www.klarna.com/international/press/klarna-ai-assistant-handles-two-thirds-of-customer-service-chats-in-its-first-month/" target="_blank" rel="noopener noreferrer">Klarna AI assistant announcement</a></div>
+        </div>
+
+        <div class="impact-card">
+          <div class="impact-kicker">PwC Customer Experience</div>
+          <div class="impact-metric">32%</div>
+          <h4>Bad support destroys lifetime value</h4>
+          <p>PwC reports 32% of customers would leave a brand they love after one bad experience, 59% after several bad experiences, and 82% of U.S. consumers want more human interaction as technology improves. Pure bot-first refund flows can reduce cost and still increase churn.</p>
+          <div class="impact-source">Source: <a href="https://www.pwc.com/us/en/services/consulting/library/consumer-intelligence-series/future-of-customer-experience.html" target="_blank" rel="noopener noreferrer">PwC, Experience is everything. Get it right.</a></div>
+        </div>
+
+        <div class="impact-card">
+          <div class="impact-kicker">Payment Network Evidence</div>
+          <div class="impact-metric">38%</div>
+          <h4>Shared payment data already cuts losses</h4>
+          <p>Stripe says Radar reduces fraud by 38% on average using network-wide signals across more than $1.4T in annual payment volume. Adyen positions its risk products around trillions of dollars in payment data to reduce losses, chargebacks, and operational burden. The market already validates network-scale intelligence.</p>
+          <div class="impact-source">Sources: <a href="https://stripe.com/in/radar" target="_blank" rel="noopener noreferrer">Stripe Radar</a> · <a href="https://www.adyen.com/risk-management" target="_blank" rel="noopener noreferrer">Adyen Risk Management</a></div>
+        </div>
+
+        <div class="impact-card">
+          <div class="impact-kicker">Market Gap</div>
+          <div class="impact-metric">F28</div>
+          <h4>Refund decisioning is still missing</h4>
+          <p>On public product pages, Stripe and Adyen market payment fraud scoring and dispute tooling. Klarna markets AI service automation and still lets customers choose live agents. We did not find a public payment-native product page describing autonomous refund triage plus refund execution and settlement tracking in one workflow.</p>
+          <div class="impact-source">This is RefundPilot's integration feature: Pine Labs as both signal rail and action rail.</div>
+        </div>
+      </div>
+
+      <div class="callout fade-up" style="margin-top: 2rem;">
+        <strong>Integration feature (F28):</strong> RefundPilot plugs directly into Pine Labs for data in and actions out. That means cross-merchant context can influence the refund decision, and the same system can immediately execute refunds, payment links, tracking orders, and settlement checks. We found adjacent public products in payments, but not this end-to-end refund decision loop.
       </div>
     </div>
   </section>
@@ -1081,7 +1154,7 @@
   <section id="features" style="background: rgba(108,92,231,.02);">
     <div class="container">
       <div class="section-label">Capabilities</div>
-      <h2 class="section-title">27 Features. Zero Fluff.</h2>
+      <h2 class="section-title">28 Features. Zero Fluff.</h2>
       <p class="section-desc">Every feature solves a real problem. Edge cases aren't afterthoughts — they're first-class citizens.</p>
 
       <div class="features-grid fade-up">
@@ -1169,6 +1242,11 @@
           <div class="feature-id">F27</div>
           <h4>Graph Analytics</h4>
           <p>networkx graph: Customer ↔ Address. Connected components = fraud rings. Degree centrality = hub addresses.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-id">F28</div>
+          <h4>Payment-Native Refund Decisioning</h4>
+          <p>Pine Labs is both the data rail and the action rail: risk context in, refunds/payment links/settlements out. This is the integration layer public payment-risk tools stop short of.</p>
         </div>
         <div class="feature-card">
           <div class="feature-id">F9–F18</div>
@@ -1347,6 +1425,34 @@
           <div>
             <h5>Groq Llama 4 Scout</h5>
             <p>Fast inference for vision analysis — stock photo detection, damage assessment.</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-num">9</div>
+          <div>
+            <h5>PwC — Experience is everything. Get it right.</h5>
+            <p>32% of customers would walk away after one bad experience, 59% after several, and 82% of U.S. consumers want more human interaction as technology improves.</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-num">10</div>
+          <div>
+            <h5>Klarna AI Assistant</h5>
+            <p>2.3M conversations in month one, equivalent to 700 full-time agents, 25% fewer repeat inquiries, under 2-minute resolution time, and an estimated $40M profit improvement in 2024.</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-num">11</div>
+          <div>
+            <h5>Stripe Radar</h5>
+            <p>Stripe says network-trained AI reduces fraud by 38% on average across more than $1.4T in annual payment volume. Strong evidence that shared payment data has measurable economic value.</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-num">12</div>
+          <div>
+            <h5>Adyen Risk Management</h5>
+            <p>Adyen positions its risk stack around trillions of dollars in global payments data to reduce operational burden, losses, and chargeback costs.</p>
           </div>
         </div>
       </div>

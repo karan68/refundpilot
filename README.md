@@ -256,6 +256,10 @@ The math is transparent. Every signal's contribution is visible on screen. The m
 6. **Pine Labs Plural API** — Payment gateway APIs for orders, refunds, payment links, settlements. [developer.pinelabs.com](https://developer.pluralbypinetree.com/)
 7. **ZhipuAI GLM-5** — Large language model for reasoning and explanation generation. [open.bigmodel.cn](https://open.bigmodel.cn/)
 8. **Groq Llama 4 Scout** — Fast inference for vision analysis (stock photo detection, damage assessment). [groq.com](https://groq.com/)
+9. **PwC — Experience is everything. Get it right.** — 32% of customers would leave a brand they loved after one bad experience, 59% after several, and 82% of U.S. consumers want more human interaction as technology improves. [pwc.com](https://www.pwc.com/us/en/services/consulting/library/consumer-intelligence-series/future-of-customer-experience.html)
+10. **Klarna AI Assistant** — Klarna says its assistant handled 2.3M conversations in its first month, did the equivalent work of 700 full-time agents, cut resolution time from 11 minutes to under 2, and was estimated to improve profit by $40M in 2024. [klarna.com](https://www.klarna.com/international/press/klarna-ai-assistant-handles-two-thirds-of-customer-service-chats-in-its-first-month/)
+11. **Stripe Radar** — Stripe says Radar reduces fraud by 38% on average using network-wide signals across more than $1.4T in annual payment volume. [stripe.com](https://stripe.com/in/radar)
+12. **Adyen Risk Management** — Adyen positions its risk stack around trillions of dollars in global payments data to reduce losses, chargeback costs, and operational burden. [adyen.com](https://www.adyen.com/risk-management)
 
 ### 3-Tier Decision Logic
 
@@ -302,6 +306,41 @@ RefundPilot uses Pine Labs as **load-bearing infrastructure in both directions**
 
 ---
 
+## Real-World Impact
+
+Refund operations break when teams pick the wrong extreme.
+
+### Human on every request doesn't scale
+
+Klarna said its AI assistant handled **2.3 million conversations in one month**, did the equivalent work of **700 full-time agents**, cut average resolution time to **under 2 minutes from 11**, reduced repeat inquiries by **25%**, and was estimated to improve profit by **$40M in 2024**. That is the operational case for automating low-risk, repetitive service work instead of routing every refund through a human queue.
+
+### AI-only chat burns trust
+
+PwC reports that **32% of customers would stop doing business with a brand they love after one bad experience**, **59% after several bad experiences**, and **82% of U.S. consumers want more human interaction as technology improves**. Refunds are high-emotion moments: a sloppy bot script can save short-term support cost while quietly destroying customer lifetime value.
+
+### Payment networks already prove the value of shared risk data
+
+Stripe says Radar reduces fraud by **38% on average** using network-wide signals across more than **$1.4T in annual payment volume**. Adyen positions its risk products around **trillions of dollars in global payments data** to reduce losses, chargeback costs, and operational burden. The market already validates network-scale intelligence; it is just being applied mostly to payment fraud and disputes, not refund triage.
+
+### Public payment-company check
+
+We checked public product pages from Stripe Radar, Adyen Risk Management, and Klarna's AI assistant:
+
+- **Stripe / Adyen** are strong on payment fraud scoring, manual review tooling, and dispute prevention.
+- **Klarna** is strong on AI customer service automation for refunds and returns, while still allowing customers to choose live agents.
+- **What we did not find publicly** was an end-to-end, payment-native product that autonomously triages every refund into **approve / investigate / escalate** and then executes **refunds, payment links, and settlement tracking** in one loop.
+
+### F28 — Payment-Native Refund Decisioning
+
+That gap is the integration feature in RefundPilot.
+
+- **Signal rail:** Pine Labs transaction history and cross-merchant context feed the decision.
+- **Action rail:** Pine Labs refunds, payment links, tracking orders, and settlements execute the outcome.
+
+RefundPilot is not just better chat, and not just better fraud scoring. It is a refund decision engine wired directly into payment operations.
+
+---
+
 ## Features
 
 | # | Feature | Description |
@@ -322,6 +361,7 @@ RefundPilot uses Pine Labs as **load-bearing infrastructure in both directions**
 | F25 | Conversational Commerce | Free-text refund via chat (Hindi/English) |
 | F26 | Fraud Similarity | Cosine distance to known fraudster profile |
 | F27 | Graph Analytics | Customer↔Address network visualization |
+| F28 | Payment-Native Refund Decisioning | Pine Labs acts as both data rail and action rail for refund triage, execution, and reconciliation |
 
 ---
 
