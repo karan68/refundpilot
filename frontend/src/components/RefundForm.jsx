@@ -44,19 +44,20 @@ export default function RefundForm({ onResult }) {
       {/* Customer Selection */}
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-2">Select Customer</label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           {CUSTOMER_PRESETS.map((c) => (
             <button
               key={c.id}
               type="button"
               onClick={() => handleCustomerSelect(c.id)}
-              className={`p-3 rounded-lg border text-left text-sm transition-all ${
+              className={`p-2.5 rounded-lg border text-left text-sm transition-all ${
                 selectedCustomer === c.id
                   ? 'border-blue-500 bg-blue-500/10 text-white'
                   : 'border-gray-700 bg-gray-800/50 text-gray-400 hover:border-gray-600'
               }`}
             >
-              {c.label}
+              <span className="font-medium">{c.name}</span>
+              <span className="text-xs text-gray-600 block">{c.id}</span>
             </button>
           ))}
         </div>

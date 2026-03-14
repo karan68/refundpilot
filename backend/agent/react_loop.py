@@ -149,39 +149,43 @@ async def _heuristic_react_loop(signals: dict, risk_score: int, signals_data: di
     is_cold_start = signals_data.get("is_cold_start", False)
 
     steps.append({
+        "type": "THOUGHT",
+        "content": f"Risk score is {risk_score}/100 — falls in the investigate zone (31-70). Let me analyze the key signals to determine what action to take. Cross-merchant fraud score: {cm_score}, delivery contradiction: {dc_score}, sentiment: {sentiment_score}.",
         "iteration": 1,
-        "thought": f"Score is {risk_score} (investigate zone). Analyzing signals to determine next action.",
-        "action": "analyze_signals",
-        "observation": f"Key signals: cross_merchant={cm_score}, delivery_contradiction={dc_score}, sentiment={sentiment_score}, cold_start={is_cold_start}",
     })
 
     # Step 2: Pick action based on signals
     if is_cold_start:
         action = "request_evidence"
-        thought = "New customer with <3 orders. Requesting evidence as precautionary measure."
+        thought = "This is a new customer with fewer than 3 orders. I don't have enough behavioral data to make a confident decision. Requesting photo evidence of the damage as a precautionary measure."
     elif 0 < cm_score < 100:
         action = "check_cross_merchant"
-        thought = f"Cross-merchant score is {cm_score} (partial). Querying Pine Labs network for more data."
+        thought = f"Cross-merchant fraud score is {cm_score} — this customer has filed claims at other Pine Labs merchants. Querying the Pine Labs network for detailed cross-merchant refund data."
     elif 0 < dc_score < 100:
         action = "request_evidence"
-        thought = f"Delivery contradiction score is {dc_score}. Requesting photo evidence to verify damage claim."
+        thought = f"Delivery contradiction score is {dc_score} — the claimed issue doesn't fully match the delivery status. Requesting photo evidence with barcode/tag visible to verify the damage claim."
     elif sentiment_score >= 10:
         action = "request_evidence"
-        thought = "Formulaic message detected. Requesting evidence to verify authenticity."
+        thought = "The refund message appears formulaic — serial abusers often use copy-paste templates. Requesting photo evidence to verify this is a genuine claim."
     elif risk_score <= 45:
         action = "offer_store_credit"
-        thought = f"Score {risk_score} is in lower investigate zone. Customer may be retainable with store credit."
+        thought = f"Score {risk_score} is in the lower investigate zone. The customer profile suggests they may be retainable. Calculating a store credit offer with bonus to retain revenue."
     else:
         action = "request_evidence"
-        thought = f"Score {risk_score} is in upper investigate zone. Requesting evidence before deciding."
+        thought = f"Score {risk_score} is in the upper investigate zone — more evidence needed before making a decision. Requesting damage photo with product barcode visible."
 
     observation = await _execute_tool(action, signals_data)
 
     steps.append({
+        "type": "ACTION",
+        "content": thought,
+        "tool": action,
         "iteration": 2,
-        "thought": thought,
-        "action": action,
-        "observation": observation,
+    })
+    steps.append({
+        "type": "OBSERVATION",
+        "content": observation,
+        "iteration": 2,
     })
 
     # Step 3: Final decision
@@ -196,10 +200,9 @@ async def _heuristic_react_loop(signals: dict, risk_score: int, signals_data: di
         final_thought = "Awaiting customer evidence to make final determination."
 
     steps.append({
+        "type": "THOUGHT",
+        "content": final_thought,
         "iteration": 3,
-        "thought": final_thought,
-        "action": final,
-        "observation": f"Final decision: {final}",
     })
 
     return {

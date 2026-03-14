@@ -54,6 +54,18 @@ ORDERS = [
     # ── Meera (perfect: 15 orders, 0 refunds) ──
     ("ORD-5001", "CUST-005", "FASH-001", "Cotton Kurta - Blue", 800.0, "2026-03-08", "delivered", "2026-03-10", 15, "22 Koregaon Park, Pune"),
     ("ORD-5002", "CUST-005", "HOME-002", "Scented Candle Set", 650.0, "2026-02-12", "delivered", "2026-02-14", 15, "22 Koregaon Park, Pune"),
+    # Extra orders (no refunds) to normalize product cohort rates
+    ("ORD-5003", "CUST-005", "ELEC-001", "Wireless Earbuds Pro", 3500.0, "2025-11-10", "delivered", "2025-11-12", 15, "22 Koregaon Park, Pune"),
+    ("ORD-5004", "CUST-005", "FASH-002", "Running Shoes - Black", 2400.0, "2025-10-05", "delivered", "2025-10-07", 15, "22 Koregaon Park, Pune"),
+    ("ORD-5005", "CUST-005", "HOME-001", "Ceramic Vase - White", 1200.0, "2025-09-15", "delivered", "2025-09-17", 15, "22 Koregaon Park, Pune"),
+    ("ORD-5006", "CUST-005", "ELEC-002", "USB-C Charging Cable", 499.0, "2025-08-20", "delivered", "2025-08-22", 15, "22 Koregaon Park, Pune"),
+    ("ORD-1006", "CUST-001", "HOME-001", "Ceramic Vase - White", 1200.0, "2025-09-01", "delivered", "2025-09-03", 15, "12 Marine Drive, Mumbai"),
+    ("ORD-1007", "CUST-001", "ELEC-001", "Wireless Earbuds Pro", 3500.0, "2025-08-15", "delivered", "2025-08-17", 15, "12 Marine Drive, Mumbai"),
+    ("ORD-1008", "CUST-001", "FASH-002", "Running Shoes - Black", 2400.0, "2025-07-20", "delivered", "2025-07-22", 15, "12 Marine Drive, Mumbai"),
+    ("ORD-3004", "CUST-003", "FASH-001", "Cotton Kurta - Blue", 800.0, "2025-11-01", "delivered", "2025-11-03", 15, "88 Indiranagar, Bangalore"),
+    ("ORD-3005", "CUST-003", "FASH-002", "Running Shoes - Black", 2400.0, "2025-10-10", "delivered", "2025-10-12", 15, "88 Indiranagar, Bangalore"),
+    ("ORD-3006", "CUST-003", "HOME-002", "Scented Candle Set", 650.0, "2025-09-05", "delivered", "2025-09-07", 15, "88 Indiranagar, Bangalore"),
+    ("ORD-3007", "CUST-003", "HOME-001", "Ceramic Vase - White", 1200.0, "2025-08-12", "delivered", "2025-08-14", 15, "88 Indiranagar, Bangalore"),
 
     # ── Arjun (serial abuser: 6 orders, 5 refunds) ──
     ("ORD-6001", "CUST-006", "ELEC-001", "Wireless Earbuds Pro", 3500.0, "2026-03-02", "delivered", "2026-03-05", 15, "15 HSR Layout, Bangalore"),

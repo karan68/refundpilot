@@ -96,9 +96,17 @@ async def chat_refund(request: ChatRefundRequest):
     reason = _extract_reason(text)
 
     if not order_id or not customer_id:
+        # Conversational response — acknowledge the issue, ask for IDs
+        reason_text = reason.replace("_", " ") if reason != "other" else "your issue"
+        missing = []
+        if not customer_id:
+            missing.append("Customer ID (e.g., CUST-001)")
+        if not order_id:
+            missing.append("Order ID (e.g., ORD-1001)")
+
         return ChatRefundResponse(
             parsed={"order_id": order_id, "customer_id": customer_id, "reason": reason},
-            message="I couldn't find the order ID or customer ID in your message. Please include them like: 'CUST-001 wants refund for ORD-1001, kurta was damaged'",
+            message=f"I understand you're having an issue with {reason_text}. I'd love to help!\n\nTo process your refund, I need your {' and '.join(missing)}. You can find these in your order confirmation email.\n\n💡 Example: \"My ID is CUST-001 and order is ORD-1001\"",
             refund_submitted=False,
         )
 

@@ -1,88 +1,144 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { chatRefund } from '../utils/api';
+
+const DEMO_CONVERSATION = [
+  { role: 'agent', content: "Hi! I'm RefundPilot. I can help you process a refund. Just describe your issue — I understand English and Hindi. 🛍️", ts: '9:01 AM' },
+  { role: 'user', content: "Hi, I bought a dress and it arrived torn. I want my money back.", ts: '9:02 AM' },
+  { role: 'agent', content: "I'm sorry to hear that! I'd like to help. Could you share your Customer ID and Order ID? You can find them in your order confirmation email.\n\n💡 For example: \"My ID is CUST-001 and order is ORD-1001\"", ts: '9:02 AM' },
+  { role: 'user', content: "My customer ID is CUST-001 and order number is ORD-1001", ts: '9:03 AM' },
+  { role: 'agent', content: "✅ Got it! Processing your refund now...\n\n📋 Order: ORD-1001 — Cotton Kurta - Blue (₹800)\n🔍 Reason: Damaged\n\n🤖 Agent scored your request: 28/100 → Auto-Approved!\n⚡ Refund of ₹800 initiated. Return pickup will be scheduled.\n\nRefund ID: REF-DEMO-001", ts: '9:03 AM', submitted: true, refundId: 'REF-DEMO-001' },
+];
+
+const QUICK_PROMPTS = [
+  "I bought a kurta and it's torn",
+  "CUST-005 ka ORD-5001 ka refund chahiye",
+  "My earbuds stopped working, order ORD-3001",
+  "CUST-002 wants refund for ORD-2001, shoes damaged",
+];
 
 export default function ChatRefundPanel() {
   const [message, setMessage] = useState('');
   const [language, setLanguage] = useState('en');
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(DEMO_CONVERSATION);
   const [loading, setLoading] = useState(false);
+  const chatEndRef = useRef(null);
 
-  const handleSend = async () => {
-    if (!message.trim()) return;
-    const userMsg = message;
-    setHistory(prev => [...prev, { role: 'user', content: userMsg }]);
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [history]);
+
+  const handleSend = async (text) => {
+    const msg = text || message;
+    if (!msg.trim()) return;
+    const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setHistory(prev => [...prev, { role: 'user', content: msg, ts }]);
     setMessage('');
     setLoading(true);
 
     try {
-      const res = await chatRefund(userMsg, language);
+      const res = await chatRefund(msg, language);
       const d = res.data;
-      setHistory(prev => [...prev, {
-        role: 'agent',
-        content: d.message,
-        refundId: d.refund_id,
-        submitted: d.refund_submitted,
-        parsed: d.parsed,
-      }]);
+      const agentTs = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      if (d.refund_submitted) {
+        setHistory(prev => [...prev, {
+          role: 'agent',
+          content: d.message,
+          ts: agentTs,
+          submitted: true,
+          refundId: d.refund_id,
+        }]);
+      } else if (d.parsed && !d.parsed.customer_id) {
+        // No customer ID found — ask for it conversationally
+        setHistory(prev => [...prev, {
+          role: 'agent',
+          content: "I understand your issue! To process the refund, I need your Customer ID and Order ID. Could you share them?\n\n💡 Try: \"My ID is CUST-001 and order is ORD-1001\"\n\n📋 Available test customers: Priya (CUST-001), Rohit (CUST-002), Vikram (CUST-004), Meera (CUST-005)",
+          ts: agentTs,
+        }]);
+      } else {
+        setHistory(prev => [...prev, {
+          role: 'agent',
+          content: d.message,
+          ts: agentTs,
+          parsed: d.parsed,
+        }]);
+      }
     } catch {
-      setHistory(prev => [...prev, { role: 'agent', content: 'Something went wrong. Try again.' }]);
+      setHistory(prev => [...prev, { role: 'agent', content: 'Something went wrong. Please try again.', ts: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
-      <h2 className="text-lg font-semibold text-white mb-4">💬 Chat Refund (F25)</h2>
-      <p className="text-xs text-gray-500 mb-3">Type a refund request in natural language. Include customer ID and order ID.</p>
+    <div className="bg-gray-900 rounded-2xl border border-gray-800 flex flex-col" style={{ height: '600px' }}>
+      {/* Header */}
+      <div className="p-4 border-b border-gray-800 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-lg">🤖</div>
+        <div>
+          <h2 className="text-sm font-semibold text-white">RefundPilot Agent</h2>
+          <p className="text-xs text-green-400">Online · Responds instantly</p>
+        </div>
+        <div className="ml-auto flex gap-2">
+          {['en', 'hi'].map(l => (
+            <button key={l} onClick={() => setLanguage(l)}
+              className={`px-2 py-0.5 rounded text-xs ${language === l ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-500'}`}>
+              {l === 'en' ? 'EN' : 'हि'}
+            </button>
+          ))}
+        </div>
+      </div>
 
-      {/* Language toggle */}
-      <div className="flex gap-2 mb-3">
-        {['en', 'hi'].map(l => (
-          <button key={l} onClick={() => setLanguage(l)}
-            className={`px-3 py-1 rounded text-xs ${language === l ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-400 border border-gray-700'}`}>
-            {l === 'en' ? 'English' : 'हिन्दी'}
+      {/* Chat messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30,40,60,0.3) 0%, transparent 100%)' }}>
+        {history.map((msg, i) => (
+          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-[80%] p-3 rounded-2xl text-sm whitespace-pre-line ${
+              msg.role === 'user'
+                ? 'bg-blue-600 text-white rounded-br-md'
+                : 'bg-gray-800 text-gray-200 rounded-bl-md border border-gray-700'
+            }`}>
+              {msg.content}
+              {msg.submitted && (
+                <span className="block mt-2 text-xs text-green-300 font-medium">✅ Refund {msg.refundId} processed</span>
+              )}
+              <span className={`block mt-1 text-xs ${msg.role === 'user' ? 'text-blue-200' : 'text-gray-500'}`}>{msg.ts}</span>
+            </div>
+          </div>
+        ))}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="bg-gray-800 border border-gray-700 p-3 rounded-2xl rounded-bl-md">
+              <span className="text-gray-400 text-sm">typing...</span>
+            </div>
+          </div>
+        )}
+        <div ref={chatEndRef} />
+      </div>
+
+      {/* Quick prompts */}
+      <div className="px-4 py-2 flex gap-2 overflow-x-auto border-t border-gray-800/50">
+        {QUICK_PROMPTS.map((p, i) => (
+          <button key={i} onClick={() => handleSend(p)}
+            className="px-3 py-1.5 rounded-full bg-gray-800 border border-gray-700 text-gray-400 text-xs whitespace-nowrap hover:text-white hover:border-gray-500 shrink-0">
+            {p}
           </button>
         ))}
       </div>
 
-      {/* Chat history */}
-      <div className="space-y-2 mb-3 max-h-64 overflow-y-auto">
-        {history.map((msg, i) => (
-          <div key={i} className={`p-3 rounded-lg text-sm ${
-            msg.role === 'user' ? 'bg-blue-500/10 border border-blue-500/20 text-blue-300 ml-8' :
-            'bg-gray-800/50 border border-gray-700 text-gray-300 mr-8'
-          }`}>
-            <span className="text-xs text-gray-500 block mb-1">{msg.role === 'user' ? '👤 You' : '🤖 Agent'}</span>
-            {msg.content}
-            {msg.submitted && (
-              <span className="block mt-1 text-xs text-green-400">✅ Refund {msg.refundId} submitted</span>
-            )}
-            {msg.parsed && !msg.submitted && (
-              <span className="block mt-1 text-xs text-yellow-400">Parsed: {JSON.stringify(msg.parsed)}</span>
-            )}
-          </div>
-        ))}
-        {loading && (
-          <div className="p-3 rounded-lg bg-gray-800/50 border border-gray-700 text-gray-500 text-sm mr-8">
-            🤖 Agent is thinking...
-          </div>
-        )}
-      </div>
-
       {/* Input */}
-      <div className="flex gap-2">
+      <div className="p-3 border-t border-gray-800 flex gap-2">
         <input
           type="text"
           value={message}
           onChange={e => setMessage(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSend()}
-          placeholder={language === 'en' ? 'e.g. CUST-001 wants refund for ORD-1001, kurta damaged' : 'e.g. CUST-001 ka ORD-1001 ka refund chahiye, kurta tuta hua'}
-          className="flex-1 p-3 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:border-blue-500 focus:outline-none"
+          placeholder="Type your refund request..."
+          className="flex-1 p-3 rounded-full bg-gray-800 border border-gray-700 text-white text-sm focus:border-green-500 focus:outline-none"
         />
-        <button onClick={handleSend} disabled={loading}
-          className="px-4 py-3 rounded-lg bg-blue-600 text-white text-sm disabled:opacity-50">
-          Send
+        <button onClick={() => handleSend()} disabled={loading || !message.trim()}
+          className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center disabled:opacity-30">
+          ➤
         </button>
       </div>
     </div>

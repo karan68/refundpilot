@@ -22,15 +22,15 @@ export const REFUND_REASONS = [
 ];
 
 export const CUSTOMER_PRESETS = [
-  { id: 'CUST-001', name: 'Priya Sharma', type: 'loyal', label: '🟢 Priya (Loyal Customer)' },
-  { id: 'CUST-002', name: 'Rohit Mehta', type: 'abuser', label: '🔴 Rohit (Serial Abuser)' },
-  { id: 'CUST-003', name: 'Anita Verma', type: 'loyal', label: '🟢 Anita (Loyal)' },
-  { id: 'CUST-004', name: 'Vikram Singh', type: 'suspect', label: '🟡 Vikram (Suspect)' },
-  { id: 'CUST-005', name: 'Meera Patel', type: 'loyal', label: '🟢 Meera (Perfect Record)' },
-  { id: 'CUST-006', name: 'Arjun Reddy', type: 'abuser', label: '🔴 Arjun (Serial Abuser)' },
-  { id: 'CUST-007', name: 'Neha Gupta', type: 'new', label: '🆕 Neha (New Customer)' },
-  { id: 'CUST-008', name: 'Deepak Kumar', type: 'ring', label: '🔵 Deepak (Fraud Ring)' },
-  { id: 'CUST-009', name: 'Sunita Devi', type: 'ring', label: '🔵 Sunita (Fraud Ring)' },
+  { id: 'CUST-001', name: 'Priya Sharma', type: 'loyal', label: 'Priya Sharma' },
+  { id: 'CUST-002', name: 'Rohit Mehta', type: 'abuser', label: 'Rohit Mehta' },
+  { id: 'CUST-003', name: 'Anita Verma', type: 'loyal', label: 'Anita Verma' },
+  { id: 'CUST-004', name: 'Vikram Singh', type: 'suspect', label: 'Vikram Singh' },
+  { id: 'CUST-005', name: 'Meera Patel', type: 'loyal', label: 'Meera Patel' },
+  { id: 'CUST-006', name: 'Arjun Reddy', type: 'abuser', label: 'Arjun Reddy' },
+  { id: 'CUST-007', name: 'Neha Gupta', type: 'new', label: 'Neha Gupta' },
+  { id: 'CUST-008', name: 'Deepak Kumar', type: 'ring', label: 'Deepak Kumar' },
+  { id: 'CUST-009', name: 'Sunita Devi', type: 'ring', label: 'Sunita Devi' },
 ];
 
 export const ORDER_PRESETS = {
