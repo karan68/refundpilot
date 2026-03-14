@@ -1,0 +1,143 @@
+# RefundPilot — 3-Minute Demo Script
+
+**Total: 2 minutes 50 seconds. Practice until it's under 3:00.**
+
+---
+
+## INTRO (0:00 – 0:20) — The Problem
+
+> "Every Indian e-commerce merchant bleeds money in two ways.
+>
+> First — a loyal customer buys a ₹800 kurta. It arrives damaged. She waits 15 days for a refund. By day 3, she's left a 1-star review. She never comes back.
+>
+> Second — a serial abuser returns 8 of 12 orders. Always 'damaged in transit.' He costs the merchant ₹47,000 a year. Nobody notices.
+>
+> Same system. Same 15-day wait. The honest customer and the fraudster — treated identically.
+>
+> We built RefundPilot to fix this."
+
+---
+
+## WHAT IT IS (0:20 – 0:40) — Architecture in 20 Seconds
+
+> "RefundPilot is an autonomous AI agent. Here's how it works.
+>
+> A refund request comes in. The agent collects 10 signals — customer refund rate, delivery contradiction, RFM analysis, cross-merchant fraud from the Pine Labs network, and more.
+>
+> These feed into a deterministic weighted formula. Not an LLM rolling dice — actual math. Same input, same output, every time. Auditable for RBI compliance.
+>
+> The score goes through a 3-tier decision engine. Score under 30 — math auto-approves. Over 70 — math auto-escalates. The 31-to-70 gray zone? That's where GLM-5 enters a ReAct reasoning loop — thinking, acting, observing — true agentic AI.
+>
+> Actions fire through Pine Labs — real orders, real payment links, real refund API calls. Vision analysis runs through Groq's Llama-4 for evidence photo verification. Backend is Python FastAPI, frontend is React, database is SQLite with 9 seeded customer profiles."
+
+**[Show: Architecture diagram — point to: 10 signals → weighted score → 3-tier → Pine Labs actions]**
+
+---
+
+## LIVE DEMO (0:40 – 2:05) — The Heart of the Pitch
+
+### Scene 1: Priya — The Loyal Customer (0:40 – 1:05)
+
+**[Click: Live Demo page → "Run All 3 Scenarios" button]**
+
+> "Priya bought a kurta. It arrived torn.
+>
+> Watch — the agent pulls 10 signals. Refund rate 2%. No delivery contradiction. No cross-merchant claims. RFM is clean.
+>
+> Score: 28 out of 100. Auto-approved. 3.9 seconds.
+>
+> Pine Labs order created. Return pickup scheduled. Priya gets her money back today, not in 15 days."
+
+**[Point to: Score meter, 10-signal breakdown, Pine Labs order ID, timing badge]**
+
+### Scene 2: Rohit — The Serial Abuser (1:05 – 1:35)
+
+> "Now Rohit. Same system. Same 10 signals.
+>
+> But look — 67% refund rate. Signed for delivery but claims damage. 9 previous 'damaged in transit' claims. 2 cross-merchant claims at other Pine Labs merchants.
+>
+> Score: 81. Circuit breaker fires. Auto-escalated.
+>
+> And here's the killer — fraud ring detected. 2 other accounts at the same shipping address filed refunds in the last 30 days. That's only possible because Pine Labs sees across merchants.
+>
+> Case brief auto-generated. Top 5 risk signals. Counterfactual: what would need to change for Rohit to be approved. Human reviewer gets a pre-investigated case, not a raw ticket."
+
+**[Point to: Red score, circuit breaker badge, fraud ring alert, case brief]**
+
+### Scene 3: Vikram — The Gray Zone (1:35 – 1:50)
+
+> "Vikram is the interesting one. Score 55 — the gray zone.
+>
+> Here, math doesn't decide. The AI enters a ReAct loop — think, act, observe. It checks cross-merchant data, requests photo evidence, considers store credit.
+>
+> This is the agentic part. Clear cases get math. Ambiguous cases get AI judgment. Best of both worlds."
+
+**[Point to: ReAct THOUGHT/ACTION/OBSERVATION steps expanded]**
+
+---
+
+## DASHBOARD + PINE LABS (1:55 – 2:10) — Merchant Intelligence
+
+**[Click: Dashboard]**
+
+> "The merchant sees everything — fraud alerts by city, product defect patterns, fraud network graph showing ring connections.
+>
+> Natural language queries — 'show me top abusers' — answered instantly.
+>
+> Every refund tracked end-to-end with Pine Labs settlement reconciliation."
+
+**[Quick scroll: alerts → KPIs → NL query → fraud graph → cohorts → reconciliation]**
+
+> "And the vision pipeline — customer uploads a damage photo, our AI checks EXIF metadata and runs damage analysis. Stock photos get caught instantly."
+
+**[Optional: show Chat Refund page briefly]**
+
+> "Conversational commerce — customers describe their issue in plain English or Hindi. The agent extracts intent, processes the refund."
+
+---
+
+## WHY PINE LABS (2:10 – 2:25) — The Platform Argument
+
+> "This only works on Pine Labs. Signal 10 — cross-merchant fraud detection — requires seeing across thousands of merchants. The fraud ring detection uses shared payment rails.
+>
+> Pine Labs isn't just the payment endpoint. It's the data backbone. Data flows in for scoring, actions flow out for execution. Every fraud caught is a chargeback Pine Labs doesn't process."
+
+---
+
+## CLOSE (2:25 – 2:50) — Impact + Future
+
+> "RefundPilot. 15 days compressed to 4 seconds. Honest customers protected. Fraudsters caught.
+>
+> Where this goes next — Isolation Forest anomaly detection on real merchant data catches fraud patterns no rule can define. Adaptive weight tuning auto-calibrates the 10 signal weights per merchant. Cross-merchant federated learning shares fraud signals across the Pine Labs network without exposing PII. And predictive refund prevention — flagging high-risk orders before they even ship.
+>
+> Today it's refunds. Tomorrow — settlement reconciliation, chargeback defense, predictive fraud prevention. One autonomous commerce platform, powered by Pine Labs.
+>
+> 15 days to 4 seconds. That's RefundPilot."
+
+---
+
+## SCREEN ORDER CHEAT SHEET
+
+| Time | Screen | What to Show |
+|------|--------|-------------|
+| 0:00 | Talking / Website | Problem story — Priya vs Rohit |
+| 0:20 | Architecture diagram | 10 signals → weighted score → 3-tier → Pine Labs |
+| 0:30 | Mention stack | GLM-5, Groq Vision, FastAPI, React, Pine Labs APIs |
+| 0:40 | Live Demo page | Click "Run All 3 Scenarios" |
+| 0:45 | Priya card | Score 28, green, Pine Labs order, 3.9s |
+| 1:05 | Rohit card | Score 81, red, fraud ring, circuit breaker, case brief |
+| 1:35 | Vikram card | Score 55, ReAct loop expanded |
+| 1:50 | Dashboard | Quick scroll: alerts → KPIs → NL query → fraud graph |
+| 2:10 | Talking | Why this only works on Pine Labs |
+| 2:25 | Talking | Future: anomaly detection, adaptive weights, federated learning |
+| 2:45 | Talking | Close: "15 days to 4 seconds" |
+
+---
+
+## LINES TO MEMORIZE
+
+- "Same system. Same 10 signals. Same 4 seconds. Different decisions."
+- "Math decides clear cases. AI decides gray areas."
+- "Cross-merchant fraud detection — only possible on Pine Labs."
+- "Every fraud caught is a chargeback Pine Labs doesn't process."
+- "15 days to 4 seconds. That's RefundPilot."
